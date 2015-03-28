@@ -22,13 +22,13 @@ class Handler(webapp2.RequestHandler):
 #Basic
 class MainPage(Handler):
 	def get(self):
-		self.response.headers['Content-Type'] = 'text/plain'
+		self.response.headers['Content-Type'] = 'text/html'
 		visits = self.request.cookies.get('visits','0')
 		if visits.isdigit():
 			visits = int(visits) + 1
 		else:
 			visits = 0
-		self.write("You have been here %s times! \n\n" % visits)
+		self.render("login.html", visits = visits)
 		self.response.headers.add_header('Set-cookie', 'visits = %s' % visits)
 		#self.write(self.response)
 
