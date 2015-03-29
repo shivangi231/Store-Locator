@@ -1,0 +1,17 @@
+{% set userid=userid or "Enter a unique id" %}
+{% set username=username or "Enter your name" %}
+{% set password=password or "Enter your password" %}
+{% set confirm_password=confirm_password or "Re-Enter your password" %}
+
+
+<body>
+<form method="post"> 
+	<input type="text" name="username" value="{{username}}">  <br>
+    <input type="text" name="userid" value="{{userid}}"> <br>
+    <input type="password" name="password" value="{{password}}"> <br>
+    <input type="password" name="c_password" value="{{confirm_password}}"> <br>
+	<input type="submit">
+</form>
+    {{error}}
+
+</body>
