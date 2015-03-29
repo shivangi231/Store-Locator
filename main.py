@@ -1,12 +1,13 @@
-import webapp2
 import os
-import jinja2
 import cgi
+import datetime
+import jinja2
+import webapp2
+from google.appengine.ext import ndb 
 
-#Setup templating engine
+#Setup templating engine - Jinja2
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),autoescape = True)
-
 class Handler(webapp2.RequestHandler):
 	def write(self, *a, **kw):
 		self.response.write(*a,**kw)
@@ -19,7 +20,39 @@ class Handler(webapp2.RequestHandler):
 		self.write(self.render_Str(template, **kw))
 
 
-#Basic
+#Setup Users DB. and its methods acting as wrappers
+class Users(ndb.Model):
+	userid = ndb.StringProperty()
+	#username = ndb.StringProperty()
+	#password = ndb.StringProperty()
+	#visits = ndb.IntegerProperty()
+
+	@classmethod
+	def getUsers(self):
+		query = self.query()
+		print query
+		return query
+
+class MainPage(Handler):
+	def get(self):
+		self.response.headers['Content-Type'] = 'text/html'
+		self.render("login.html")
+
+	def post(self):
+		self.response.headers['Content-Type'] = 'text/html'
+		_userid = self.request.get('username')
+		print "About to add '", _userid, "' to the database"
+		entry = Users(userid = _userid)
+		entry.put()
+
+class PrintUsers(Handler):
+	def get(self):
+		queries = Users.getUsers()
+		for query in queries:
+			self.write("<p>%s</p>" % query.userid)
+
+
+"""#Basic
 class MainPage(Handler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/html'
@@ -58,13 +91,12 @@ class MainPage(Handler):
 
 		#Render the form
 		self.render("welcome.html", visits = visits)	
-
-
-
+"""
 
 
 application = webapp2.WSGIApplication([
-									('/',MainPage)
+									('/',MainPage),
+									('/getusers/',PrintUsers)
 									], debug=True)
 
 
