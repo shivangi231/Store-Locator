@@ -22,49 +22,17 @@ class Handler(webapp2.RequestHandler):
 #Basic
 class MainPage(Handler):
 	def get(self):
-		self.response.headers['Content-Type'] = 'text/html'
-		visits = self.request.cookies.get('visits','0')
-		userid = self.request.cookies.get('userid','guest')
-		if visits.isdigit():
-			visits = int(visits) + 1
-		else:
-			visits = 0
-		self.render("login.html", visits = visits)
-		self.response.headers.add_header('Set-cookie', 'visits = %s' % visits)
-		self.response.headers.add_header('Set-cookie', 'userid = %s' % str(userid))
-
-	def post(self):
-
-		#Fetch the username, from the form and from the cookie.
-		self.response.headers['Content-Type'] = 'text/html'
-		userid_from_cookies = self.request.cookies.get('userid','guest')
-		userid_from_form = self.request.get('username')
-		visits = self.request.cookies.get('visits','0')
-
-		#Print out the number of visits
-		if visits.isdigit():
-			visits = int(visits) + 1
-		else:
-			visits = 0
-
-		#If the names don't match, then simply welcome the new user differently.
-		if userid_from_form != userid_from_cookies:
-			self.write("Welcome Mr. %s" % userid_from_form)
-			visits = 0
-		
-		#Set cookies
-		self.response.headers.add_header('Set-cookie', 'visits = %s' % visits)
-		self.response.headers.add_header('Set-cookie', 'userid = %s' % str(userid_from_form))
-
-		#Render the form
-		self.render("welcome.html", visits = visits)	
+		self.render("registration.html")
 
 
-
+class FileServer(Handler):
+	def get(self):
+		print self.request
 
 
 application = webapp2.WSGIApplication([
-									('/',MainPage)
+									('/',MainPage),
+									('/css/',FileServer)
 									], debug=True)
 
 
