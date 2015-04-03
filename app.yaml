@@ -11,5 +11,7 @@ libraries:
   version: latest
 
 handlers:
+- url: /css
+  static_dir: templates/css
 - url: /.*
   script: main.application

@@ -34,7 +34,7 @@ class Users(ndb.Model):
 		for user in query: users.append(str(user.userid))
 		print users
 		return users
-
+		
 	@classmethod
 	def register(self,_userid,_username,_password):
 		print "Registering %s" %_username
@@ -47,10 +47,12 @@ class Users(ndb.Model):
 
 class Registration(Handler):
 	def get(self):
+		print "/registration-get"
 		self.response.headers['Content-Type'] = 'text/html'
-		self.render("registration.html", userid = "Enter a unique userid", username = "Enter your name")
+		self.render("registration.html", userid = "Enter a unique user id", username = "Enter your name")
 
 	def post(self):
+		print "/registration-post"
 		register_status = (0,'Not begun yet') #If status = 0, so far success. If it goes -1, something's wrong
 		self.response.headers['Content-Type'] = 'text/html'
 		_userid = self.request.get('userid')
@@ -71,20 +73,25 @@ class Registration(Handler):
 		if register_status[0] == 0:
 			register_status = Users.register(_userid,_username,_password)
 			print register_status
-		
 
 		if register_status[0] != 0:
 			self.render("registration.html", error = register_status[1], userid = _userid, username = _username)
 		else:
 			self.redirect("/getusers/")		#Change to homepage.
 
+class FileServer(Handler):
+	def get(self):
+		print "/css-get"
+		print self.request
 
 class MainPage(Handler):
 	def get(self):
+		print "/-get"
 		self.write("Welcome!")
 
 class PrintUsers(Handler):
 	def get(self):
+		print "/getusers-get"
 		queries = Users.getUserIDs()
 		for query in queries:
 			self.write("<p>%s</p>" % query)
@@ -92,7 +99,9 @@ class PrintUsers(Handler):
 application = webapp2.WSGIApplication([
 									('/',MainPage),
 									('/registration',Registration),
-									('/getusers/',PrintUsers)
+									('/getusers/',PrintUsers),
+									('/css/',FileServer)
+
 									], debug=True)
 
 
