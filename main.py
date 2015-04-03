@@ -38,23 +38,37 @@ class Categories(ndb.Expando):
 			else:
 				entity = Categories(name = _name)
 			entity.put()
-#		self.buildRelations()
 
-	def search(self,name):
-		item_searched_for = self.locate(name)
+	@classmethod
+	def search(self,_name):
+		#Get a list of categories which have the argument string in it.
+		query = Categories.query()
+		results = []
+		for q in query:
+			if _name in q.name:
+				results.append(q)								
 
+
+	@classmethod
 	def locate(self,_name):
+		#simply does a strict string match search. MAY RETURN MORE THAN ONE RESULT!
 		query = Categories.query(Categories.name == _name).fetch()
 		print query
-		return query
+		return query 
 
 	@classmethod
 	def getAll(self):
 		query = self.query()
 		categories = []
-		for category in query: categories.append(str(category.name))
+		for category in query: categories.append(str(category.name) + str(category.key))
 		print categories
 		return categories
+
+	def getProducts(self,key = ''):
+		query = Products.query(Products.category == key)
+		return query.fetch()
+		
+
 
 
 #Products DB
@@ -114,6 +128,14 @@ class ProductsPage(Handler):
 		self.write("<ul>")
 		for category in categories:
 			self.write("<li>%s</li>" % category)
+		self.render("testpage.html")
+
+	def post(self):
+		_query = self.request.get('query')
+		categories = Categories.locate(_query)
+		for cat in categories:
+			self.write("<li>%s</li>" % cat)
+
 
 
 application = webapp2.WSGIApplication([
@@ -122,3 +144,10 @@ application = webapp2.WSGIApplication([
 									], debug=True)
 
 
+
+
+#TODO
+	#Fetch links,number of products and name of category
+	#Implement basic search of sub categories. How? Well its really simple.
+		#What i want to do is to simply - fetch all the things that carry the entire text of what we want!
+	#Build relations in categories based on their keys
