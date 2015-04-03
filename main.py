@@ -45,9 +45,9 @@ class Categories(ndb.Expando):
 		query = Categories.query()
 		results = []
 		for q in query:
-			if _name in q.name:
+			if _name in q.name.split():
 				results.append(q)								
-
+		return results
 
 	@classmethod
 	def locate(self,_name):
@@ -132,9 +132,9 @@ class ProductsPage(Handler):
 
 	def post(self):
 		_query = self.request.get('query')
-		categories = Categories.locate(_query)
+		categories = Categories.search(_query)
 		for cat in categories:
-			self.write("<li>%s</li>" % cat)
+			self.write("<li>%s</li>" % cat.name)
 
 
 
