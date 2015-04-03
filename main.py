@@ -2,6 +2,8 @@ import webapp2
 import os
 import jinja2
 import cgi
+from google.appengine.ext import ndb 
+import catalogue
 
 #Setup templating engine
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
@@ -17,6 +19,51 @@ class Handler(webapp2.RequestHandler):
 
 	def render(self, template, **kw):
 		self.write(self.render_Str(template, **kw))
+
+
+class Categories(ndb.Expando):
+	name = ndb.StringProperty(required = True)
+	path = ndb.StringProperty(repeated = True)
+	children = ndb.StringProperty(repeated = True)
+
+	@classmethod
+	def populate(self):
+		products = catalogue.getProducts()
+		print "PRODUCTS -", products
+		for product in products:
+			_name = product[0]			#The product name is supposed to be unique. ASSUMED!
+			if len(product) > 1:
+				_children = product[1]
+				entity = Categories(name = _name, children = _children)
+			else:
+				entity = Categories(name = _name)
+			entity.put()
+#		self.buildRelations()
+
+	def search(self,name):
+		item_searched_for = self.locate(name)
+
+	def locate(self,_name):
+		query = Categories.query(Categories.name == _name).fetch()
+		print query
+		return query
+
+	@classmethod
+	def getAll(self):
+		query = self.query()
+		categories = []
+		for category in query: categories.append(str(category.name))
+		print categories
+		return categories
+
+
+#Products DB
+class Products(ndb.Model):
+	name = ndb.StringProperty(required = True)
+	description = ndb.TextProperty()
+	popularity = ndb.IntegerProperty()
+	category = ndb.KeyProperty(kind = Categories)
+	brand = ndb.StringProperty()
 
 
 #Basic
@@ -60,11 +107,18 @@ class MainPage(Handler):
 		self.render("welcome.html", visits = visits)	
 
 
-
+class ProductsPage(Handler):
+	def get(self):
+		Categories.populate()
+		categories = Categories.getAll()
+		self.write("<ul>")
+		for category in categories:
+			self.write("<li>%s</li>" % category)
 
 
 application = webapp2.WSGIApplication([
-									('/',MainPage)
+									('/',MainPage),
+									('/products',ProductsPage)
 									], debug=True)
 
 
