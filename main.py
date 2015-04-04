@@ -23,7 +23,7 @@ class Handler(webapp2.RequestHandler):
 		self.write(self.render_Str(template, **kw))
 
 #Categories DB
-class Categories(ndb.Expando):
+class Categories(ndb.Model):
 	name = ndb.StringProperty(required = True)
 	children = ndb.StringProperty(repeated = True)
 
@@ -38,6 +38,40 @@ class Categories(ndb.Expando):
 			else:
 				entity = Categories(name = _name)
 			entity.put()
+
+	@classmethod
+	def isLeaf(self,_category_key):
+		category = _category_key.get()
+		if len(category.children) > 0:
+			return False
+		return True
+
+
+	@classmethod
+	def getLeafs(self,_category_key):
+		#To find all the leaf categories. (Which have no children)
+		#Will return itself if it is the leaf.
+		if self.isLeaf(_category_key):
+			return _category_key.get()
+		
+		category = _category_key.get()
+		children = self.getChildren(category)
+
+		while True:
+			all_leaves = True
+			new_list = []
+			for child in children:
+				if not self.isLeaf(child.key):
+					all_leaves = False
+					new_list += self.getChildren(child.key)
+				else:
+					new_list.append(child)
+			children = new_list
+			if all_leaves:
+				break
+
+		return children
+
 
 	@classmethod
 	def search(self,_name,_getchild = True,_ease = 90):
@@ -117,6 +151,13 @@ class Categories(ndb.Expando):
 		print _cat_children
 		return _cat_children
 
+
+	@classmethod
+	def getRoots(self):
+		all = Categories.query().fetch()
+		#THINK!
+
+
 #Products DB
 class Products(ndb.Model):
 	name = ndb.StringProperty(required = True)
@@ -132,7 +173,7 @@ class Products(ndb.Model):
 		for product in products:
 			_name = product[0]
 			_brand = product[1]
-			_category = ndb.Key(urlsafe = product[2]) #The numeric key.
+			_category = Categories.locate_primitive(product[2])[0].key #The numeric key.
 			entity = Products(name = _name, brand = _brand, category = _category)
 			entity.put()
 
@@ -141,8 +182,8 @@ class Products(ndb.Model):
 		#just find products equal or similar to this
 		query = Products.query()
 
-		if ease > 100:
-			ease = 100
+		if _ease > 100:
+			_ease = 100
 
 		results = []
 		for q in query:
@@ -159,8 +200,8 @@ class Products(ndb.Model):
 		#Try printing?
 		probable_brands = []
 
-		if ease > 100:
-			ease = 100
+		if _ease > 100:
+			_ease = 100
 
 		for q in query:
 			#First try looking for ratio match.
@@ -174,11 +215,14 @@ class Products(ndb.Model):
 		return probable_brands
 
 	@classmethod
-	def searchProductsInCategory(self,_name,_ease = 60,_category):
+	def searchProductsInCategory(self,_name, _category, _ease = 60):
+		if not Categories.isLeaf(_category):
+			return searchProductInCategories(Categories.getLeafs(_category))
+
 		query = Products.query(Products.category == _category).fetch()
 		
-		if ease > 100:
-			ease = 100
+		if _ease > 100:
+			_ease = 100
 
 		results = []
 		for q in query:
@@ -189,11 +233,11 @@ class Products(ndb.Model):
 		return results
 
 	@classmethod
-	def searchProductInCategories(self,_name,_ease = 70,_categories):
+	def searchProductInCategories(self,_name,_categories,_ease = 70):
 		query = Products.query(Products.category.IN(_categories)).fetch()
 		
-		if ease > 100:
-			ease = 100
+		if _ease > 100:
+			_ease = 100
 
 		results = []
 		for q in query:
@@ -204,12 +248,12 @@ class Products(ndb.Model):
 		return results
 
 	@classmethod
-	def searchProductInBrand(self,_name,_ease = 70,_brand):
+	def searchProductInBrand(self,_name,_brand,_ease = 70):
 		#Expects consise brand to be known!
 		query = Products.query(Products.brand == _brand).fetch()
 		
-		if ease > 100:
-			ease = 100
+		if _ease > 100:
+			_ease = 100
 
 		results = []
 		for q in query:
@@ -220,12 +264,12 @@ class Products(ndb.Model):
 		return results		
 
 	@classmethod
-	def searchProductInBrands(self,_name,_ease = 70,_brands):
+	def searchProductInBrands(self,_name,_brands,_ease = 70):
 		#Expects brand name to be actual
 		query = Products.query(Products.brand.IN(_brands)).fetch()
 		
-		if ease > 100:
-			ease = 100
+		if _ease > 100:
+			_ease = 100
 
 		results = []
 		for q in query:
@@ -234,6 +278,14 @@ class Products(ndb.Model):
 				results.append((q,similarity))
 
 		return results		
+
+
+	@classmethod
+	def getAll(self):
+		query = self.query().fetch()
+		products = []
+		for q in query: products.append(q.name + ' B:' + q.brand + ' C:' + q.category.urlsafe() + ' K:' + q.key.urlsafe())
+		return products
 
 
 #Basic
@@ -241,7 +293,7 @@ class MainPage(Handler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/html'
 		visits = self.request.cookies.get('visits','0')
-		userid = self.request.cookies.get('userid','guest')
+		userid = self.request.cookies.get('  userid','guest')
 		if visits.isdigit():
 			visits = int(visits) + 1
 		else:
@@ -279,8 +331,8 @@ class MainPage(Handler):
 
 class ProductsPage(Handler):
 	def get(self):
-		#Categories.populate()
-		categories = Categories.getAll()
+		#Products.populate()
+		categories = Products.getAll()
 		self.write("<ul>")
 		for cat in categories:
 			entry = "<li>"+ cat + "</li>"
@@ -289,9 +341,9 @@ class ProductsPage(Handler):
 
 	def post(self):
 		_query = self.request.get('query')
-		categories = Categories.locate(_query)
+		categories = Products.searchProduct(_query)
 		for cat in categories:
-			entry = "<li>" + cat.name + " " + cat.key.urlsafe() + "</li>"
+			entry = "<li>" + cat[0].name + " URL" + cat[0].key.urlsafe() + " BRAND:" + cat[0].brand + "</li>"
 			self.write(entry)
 
 
