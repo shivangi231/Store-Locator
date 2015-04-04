@@ -1,4 +1,4 @@
-def getProducts():
+def getCategories():
     products = []
     products.append(('Mobiles & Accessories',['Mobiles','Power Bank Pouches','Tablets','Mobile Accessories','Tablet Accessories','Landline Phones']))   
     products.append(('Mobiles',))
@@ -112,5 +112,12 @@ def getProducts():
     products.append(('Boys Sports Shoes',))
     products.append(('Boys School Shoes',))
     products.append(('Boys Slippers & Flip Flop',))
+
+    return products
+
+def getProducts():
+    products = []
+
+
 
     return products

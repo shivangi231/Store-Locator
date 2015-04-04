@@ -5,14 +5,12 @@ import cgi
 from google.appengine.ext import ndb 
 
 #Custom imports
-import catalogue		#TO populate the DB
-
+import catalogue		#TO populate the Categories DB
 from fuzzywuzzy import fuzz
 
 #Setup templating engine
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),autoescape = True)
-
 class Handler(webapp2.RequestHandler):
 	def write(self, *a, **kw):
 		self.response.write(*a,**kw)
@@ -31,8 +29,7 @@ class Categories(ndb.Expando):
 
 	@classmethod
 	def populate(self):
-		products = catalogue.getProducts()
-		print "PRODUCTS -", products
+		products = catalogue.getCategories()
 		for product in products:
 			_name = product[0]			#The product name is supposed to be unique. ASSUMED!
 			if len(product) > 1:
@@ -43,18 +40,27 @@ class Categories(ndb.Expando):
 			entity.put()
 
 	@classmethod
-	def search(self,_name):
+	def search(self,_name,_getchild = True,_ease = 90):
 		#Get a list of categories which have the argument string in it.
-		query = self.locate(_name,getchild = True)
-		if len(query) > 1:
+		#query = self.locate(_name,_getchild = True)
+		#if len(query) > 1:
 			#print query[1]
-			return query
+		#	return query
 
 		results = []
 		query = Categories.query().fetch()
 		for q in query:
-			if _name in q.name.split():
+			similarity = fuzz.partial_ratio(_name.lower(), q.name.lower())
+			if similarity >= _ease:
 				results.append(q)
+			if similarity == 100:
+				results = [q]
+				break
+
+		if _getchild:
+			for q in results:
+				children += self.getChildren(q)
+
 		return results
 
 	@classmethod
@@ -70,8 +76,8 @@ class Categories(ndb.Expando):
 		query = Products.query(Products.category == key)
 		return query.fetch()
 
-	@classmethod
-	def locate(self,_name,getchild = False):
+	@classmethod 	#Obsolete method of dumb  but fast keyword finding. Use only for quick results
+	def locate_primitive(self,_name,getchild = False):
 		#simply does a strict string match search. MAY RETURN MORE THAN ONE RESULT!
 		query = Categories.query(Categories.name == _name).fetch()
 		children = []
@@ -84,15 +90,33 @@ class Categories(ndb.Expando):
 		return query
 
 	@classmethod
+	def locate(self,_name,_getchild = False, _ease = 85):
+		results = []
+		children = []
+		query = ndb.gql("SELECT * FROM Categories")
+		for q  in query:
+			similarity = fuzz.ratio(_name.lower(),q.name.lower())
+			if similarity == 100:
+				results = [q]
+				break
+			if similarity >= _ease:
+				results.append(q)
+
+		if _getchild:
+			for q in results:
+				children += self.getChildren(q)
+				
+		return results + children
+
+	@classmethod
 	def getChildren(self,_cat):
 		_cat_children = []
 		for child in _cat.children:
-			for cat in self.locate(child):
+			for cat in self.locate_primitive(child):
 				_cat_children.append(cat)
 		print _cat_children
 		return _cat_children
 
-	
 #Products DB
 class Products(ndb.Model):
 	name = ndb.StringProperty(required = True)
@@ -101,6 +125,22 @@ class Products(ndb.Model):
 	category = ndb.KeyProperty(kind = Categories)
 	brand = ndb.StringProperty()
 	#shopkeeper = ndb.KeyProperty(kind = Shopkeepers)
+
+	@classmethod
+	def populate(self):
+		products = catalogue.getProducts()
+		for product in products:
+			_name = product[0]
+			_brand = product[1]
+			_category = ndb.Key(urlsafe = product[2]) #The numeric key.
+			entity = Products(name = _name, brand = _brand, category = _category)
+			entity.put()
+
+	@classmethod
+	def search(self,_name,_ease = 90):
+		#just find products equal or similar to this!
+		
+
 
 	@classmethod
 	def searchBrand(self, _name,_ease = 90):
@@ -121,12 +161,6 @@ class Products(ndb.Model):
 		#Probable brand now contains either the perfect match or some matches or NONE!.
 		#If perfect match or just one match, then that is the brand we are looking for and fetch all products for this brand.
 		#if len(probable_brands) == 1:
-
-			 
-
-
-
-
 
 
 #Basic
@@ -182,7 +216,7 @@ class ProductsPage(Handler):
 
 	def post(self):
 		_query = self.request.get('query')
-		categories = Categories.search(_query)
+		categories = Categories.locate(_query)
 		for cat in categories:
 			entry = "<li>" + cat.name + " " + cat.key.urlsafe() + "</li>"
 			self.write(entry)
