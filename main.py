@@ -3,7 +3,11 @@ import os
 import jinja2
 import cgi
 from google.appengine.ext import ndb 
-import catalogue
+
+#Custom imports
+import catalogue		#TO populate the DB
+
+from fuzzywuzzy import fuzz
 
 #Setup templating engine
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
@@ -20,7 +24,7 @@ class Handler(webapp2.RequestHandler):
 	def render(self, template, **kw):
 		self.write(self.render_Str(template, **kw))
 
-
+#Categories DB
 class Categories(ndb.Expando):
 	name = ndb.StringProperty(required = True)
 	children = ndb.StringProperty(repeated = True)
@@ -43,23 +47,21 @@ class Categories(ndb.Expando):
 		#Get a list of categories which have the argument string in it.
 		query = self.locate(_name,getchild = True)
 		if len(query) > 1:
+			#print query[1]
 			return query
 
-		print "NOT RETURNED", _name
 		results = []
 		query = Categories.query().fetch()
 		for q in query:
 			if _name in q.name.split():
-				print q
 				results.append(q)
-				print q								
 		return results
 
 	@classmethod
 	def getAll(self):
 		query = self.query()
 		categories = []
-		for category in query: categories.append(str(category.name) + str(category.key))
+		for category in query: categories.append(category.name + " " +category.key.urlsafe())
 		print categories
 		return categories
 
@@ -75,23 +77,22 @@ class Categories(ndb.Expando):
 		children = []
 		if getchild:
 			for q in query:
-				children.append(self.getChildren(q))
-		for child in children:
-			query.append(child)
+				child = self.getChildren(q)
+				for c in child:
+					children.append(c)
+		query += children
 		return query
 
 	@classmethod
 	def getChildren(self,_cat):
 		_cat_children = []
 		for child in _cat.children:
-			for categories in self.locate(child):
-				_cat_children.append(categories)
+			for cat in self.locate(child):
+				_cat_children.append(cat)
+		print _cat_children
 		return _cat_children
 
-		
-
-
-
+	
 #Products DB
 class Products(ndb.Model):
 	name = ndb.StringProperty(required = True)
@@ -99,6 +100,33 @@ class Products(ndb.Model):
 	popularity = ndb.IntegerProperty()
 	category = ndb.KeyProperty(kind = Categories)
 	brand = ndb.StringProperty()
+	#shopkeeper = ndb.KeyProperty(kind = Shopkeepers)
+
+	@classmethod
+	def searchBrand(self, _name,_ease = 90):
+		#The scope of this 
+		brand = ''		#The name of the brand. args may have a name similar but not equal. Hence this precaution.
+		query = ndb.gql("SELECT DISTINCT brand from Products").fetch()
+		#Try printing?
+		probable_brands = []
+		for q in query:
+			#First try looking for ratio match.
+			similarity = fuzz.ratio(_name,q.brand)
+			if similarity >= _ease:
+				probable_brands = (q.brand,similarity)
+				if similarity == 100:
+					probable_brands = [(q.brand,100)]
+					break
+
+		#Probable brand now contains either the perfect match or some matches or NONE!.
+		#If perfect match or just one match, then that is the brand we are looking for and fetch all products for this brand.
+		#if len(probable_brands) == 1:
+
+			 
+
+
+
+
 
 
 #Basic
@@ -147,15 +175,17 @@ class ProductsPage(Handler):
 		#Categories.populate()
 		categories = Categories.getAll()
 		self.write("<ul>")
-		for category in categories:
-			self.write("<li>%s</li>" % category)
+		for cat in categories:
+			entry = "<li>"+ cat + "</li>"
+			self.write(entry)
 		self.render("testpage.html")
 
 	def post(self):
 		_query = self.request.get('query')
 		categories = Categories.search(_query)
 		for cat in categories:
-			self.write("<li>%s</li>" % cat)
+			entry = "<li>" + cat.name + " " + cat.key.urlsafe() + "</li>"
+			self.write(entry)
 
 
 
