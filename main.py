@@ -137,30 +137,103 @@ class Products(ndb.Model):
 			entity.put()
 
 	@classmethod
-	def search(self,_name,_ease = 90):
-		#just find products equal or similar to this!
-		
+	def searchProduct(self,_name,_ease = 70):
+		#just find products equal or similar to this
+		query = Products.query()
 
+		if ease > 100:
+			ease = 100
+
+		results = []
+		for q in query:
+			similarity = fuzz.token_set_ratio(q.name,_name)
+			if similarity >= _ease:
+				results.append((q,similarity))
+
+		return results
 
 	@classmethod
 	def searchBrand(self, _name,_ease = 90):
-		#The scope of this 
 		brand = ''		#The name of the brand. args may have a name similar but not equal. Hence this precaution.
 		query = ndb.gql("SELECT DISTINCT brand from Products").fetch()
 		#Try printing?
 		probable_brands = []
+
+		if ease > 100:
+			ease = 100
+
 		for q in query:
 			#First try looking for ratio match.
 			similarity = fuzz.ratio(_name,q.brand)
+			if similarity == 100:
+				probable_brands = [(q.brand,100)]
+				break
 			if similarity >= _ease:
 				probable_brands = (q.brand,similarity)
-				if similarity == 100:
-					probable_brands = [(q.brand,100)]
-					break
 
-		#Probable brand now contains either the perfect match or some matches or NONE!.
-		#If perfect match or just one match, then that is the brand we are looking for and fetch all products for this brand.
-		#if len(probable_brands) == 1:
+		return probable_brands
+
+	@classmethod
+	def searchProductsInCategory(self,_name,_ease = 60,_category):
+		query = Products.query(Products.category == _category).fetch()
+		
+		if ease > 100:
+			ease = 100
+
+		results = []
+		for q in query:
+			similarity = fuzz.token_set_ratio(q.name,_name)
+			if similarity >= _ease:
+				results.append((q,similarity))
+
+		return results
+
+	@classmethod
+	def searchProductInCategories(self,_name,_ease = 70,_categories):
+		query = Products.query(Products.category.IN(_categories)).fetch()
+		
+		if ease > 100:
+			ease = 100
+
+		results = []
+		for q in query:
+			similarity = fuzz.token_set_ratio(q.name,_name)
+			if similarity >= _ease:
+				results.append((q,similarity))
+
+		return results
+
+	@classmethod
+	def searchProductInBrand(self,_name,_ease = 70,_brand):
+		#Expects consise brand to be known!
+		query = Products.query(Products.brand == _brand).fetch()
+		
+		if ease > 100:
+			ease = 100
+
+		results = []
+		for q in query:
+			similarity = fuzz.token_set_ratio(q.name,_name)
+			if similarity >= _ease:
+				results.append((q,similarity))
+
+		return results		
+
+	@classmethod
+	def searchProductInBrands(self,_name,_ease = 70,_brands):
+		#Expects brand name to be actual
+		query = Products.query(Products.brand.IN(_brands)).fetch()
+		
+		if ease > 100:
+			ease = 100
+
+		results = []
+		for q in query:
+			similarity = fuzz.token_set_ratio(q.name,_name)
+			if similarity >= _ease:
+				results.append((q,similarity))
+
+		return results		
 
 
 #Basic
