@@ -23,7 +23,6 @@ class Handler(webapp2.RequestHandler):
 
 class Categories(ndb.Expando):
 	name = ndb.StringProperty(required = True)
-	path = ndb.StringProperty(repeated = True)
 	children = ndb.StringProperty(repeated = True)
 
 	@classmethod
@@ -42,19 +41,19 @@ class Categories(ndb.Expando):
 	@classmethod
 	def search(self,_name):
 		#Get a list of categories which have the argument string in it.
-		query = Categories.query()
+		query = self.locate(_name,getchild = True)
+		if len(query) > 1:
+			return query
+
+		print "NOT RETURNED", _name
 		results = []
+		query = Categories.query().fetch()
 		for q in query:
 			if _name in q.name.split():
-				results.append(q)								
+				print q
+				results.append(q)
+				print q								
 		return results
-
-	@classmethod
-	def locate(self,_name):
-		#simply does a strict string match search. MAY RETURN MORE THAN ONE RESULT!
-		query = Categories.query(Categories.name == _name).fetch()
-		print query
-		return query 
 
 	@classmethod
 	def getAll(self):
@@ -64,9 +63,31 @@ class Categories(ndb.Expando):
 		print categories
 		return categories
 
+	@classmethod
 	def getProducts(self,key = ''):
 		query = Products.query(Products.category == key)
 		return query.fetch()
+
+	@classmethod
+	def locate(self,_name,getchild = False):
+		#simply does a strict string match search. MAY RETURN MORE THAN ONE RESULT!
+		query = Categories.query(Categories.name == _name).fetch()
+		children = []
+		if getchild:
+			for q in query:
+				children.append(self.getChildren(q))
+		for child in children:
+			query.append(child)
+		return query
+
+	@classmethod
+	def getChildren(self,_cat):
+		_cat_children = []
+		for child in _cat.children:
+			for categories in self.locate(child):
+				_cat_children.append(categories)
+		return _cat_children
+
 		
 
 
@@ -123,7 +144,7 @@ class MainPage(Handler):
 
 class ProductsPage(Handler):
 	def get(self):
-		Categories.populate()
+		#Categories.populate()
 		categories = Categories.getAll()
 		self.write("<ul>")
 		for category in categories:
@@ -134,7 +155,7 @@ class ProductsPage(Handler):
 		_query = self.request.get('query')
 		categories = Categories.search(_query)
 		for cat in categories:
-			self.write("<li>%s</li>" % cat.name)
+			self.write("<li>%s</li>" % cat)
 
 
 
@@ -150,4 +171,3 @@ application = webapp2.WSGIApplication([
 	#Fetch links,number of products and name of category
 	#Implement basic search of sub categories. How? Well its really simple.
 		#What i want to do is to simply - fetch all the things that carry the entire text of what we want!
-	#Build relations in categories based on their keys
