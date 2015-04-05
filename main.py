@@ -62,7 +62,7 @@ class Categories(ndb.Model):
 			for child in children:
 				if not self.isLeaf(child.key):
 					all_leaves = False
-					new_list += self.getChildren(child.key)
+					new_list += self.getChildren(child)
 				else:
 					new_list.append(child)
 			children = new_list
@@ -97,7 +97,7 @@ class Categories(ndb.Model):
 		query = self.query()
 		categories = []
 		for category in query: categories.append(category.name + " " +category.key.urlsafe())
-		print categories
+		#print categories
 		return categories
 
 	@classmethod
@@ -143,7 +143,7 @@ class Categories(ndb.Model):
 		for child in _cat.children:
 			for cat in self.locate_primitive(child):
 				_cat_children.append(cat)
-		print _cat_children
+		#print _cat_children
 		return _cat_children
 
 
@@ -166,7 +166,7 @@ class Products(ndb.Model):
 	def populate(self):
 		products = catalogue.getProducts()
 		for product in products:
-			print product
+			#print product
 			_name = product[0]
 			_brand = product[1]
 			_category = Categories.locate_primitive(product[2])[0].key #The numeric key.
@@ -203,7 +203,7 @@ class Products(ndb.Model):
 		for q in query:
 			#First try looking for ratio match.
 			similarity = fuzz.partial_ratio(_name.lower(),q.brand.lower())
-			print similarity,_name,q.brand
+			#print similarity,_name,q.brand
 			if similarity == 100:
 				probable_brands = [(q.brand,100)]
 				break
@@ -214,12 +214,18 @@ class Products(ndb.Model):
 
 	@classmethod
 	def searchProductsInCategory(self,_name, _category, _ease = 60):
-		_category = Categories.locate_primitive(_category)[0]
+		#Expects category's name
+		_category = Categories.locate(_category,_ease = 60)
+		if len(_category) > 0:
+			_category = _category[0]
+		else:
+			return
 		
 
 		if not Categories.isLeaf(_category.key):
-			return searchProductInCategories(Categories.getLeafs(_category.key()))
+			return self.searchProductInCategories(_name, Categories.getLeafs(_category.key))
 
+		#Category found in case of leaf, almost perfectly.
 		query = Products.query(Products.category == _category.key).fetch()
 		
 		if _ease > 100:
@@ -227,15 +233,19 @@ class Products(ndb.Model):
 
 		results = []
 		for q in query:
-			similarity = fuzz.token_set_ratio(q.name,_name)
+			similarity = fuzz.partial_ratio(q.name,_name)
 			if similarity >= _ease:
 				results.append((q,similarity))
 
+		#print results
 		return results
 
 	@classmethod
 	def searchProductInCategories(self,_name,_categories,_ease = 70):
-		query = Products.query(Products.category.IN(_categories)).fetch()
+		#Expects categories entity
+		_categories_key = []
+		for x in _categories: _categories_key.append(x.key)
+		query = Products.query(Products.category.IN(_categories_key)).fetch()
 		
 		if _ease > 100:
 			_ease = 100
@@ -363,7 +373,7 @@ class ProductsPage(Handler):
 		#	self.write(entry)
 		brands = Products.searchProductsInCategory(_query,_category)
 		for b in brands:
-			entry = "<li>" + b.name + " URL: " + b.key.urlsafe() + " BRAND: " + b.brand + "</li>"
+			entry = "<li>" + b[0].name + " URL: " + b[0].key.urlsafe() + " BRAND: " + b[0].brand + "</li>"
 			self.write(entry)
 
 
