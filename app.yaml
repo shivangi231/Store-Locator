@@ -17,7 +17,7 @@ handlers:
   static_dir: templates/images
 - url: /js
   static_dir: templates/js/
-  -url: /index_files/
+- url: /index_files/
   static_dir: templates/index_files
 - url: /app
   script: api.application

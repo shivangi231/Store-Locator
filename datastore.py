@@ -2,6 +2,9 @@ from google.appengine.ext import ndb
 from google.net.proto.ProtocolBuffer import ProtocolBufferDecodeError
 import catalogue					#TO populate the Categories DB
 from fuzzywuzzy import fuzz 		#For better search
+import datetime
+import random
+import utils
 
 #Categories DB
 class Categories(ndb.Model):
@@ -319,7 +322,8 @@ class Users(ndb.Model):
 	fname = ndb.StringProperty()
 	lname = ndb.StringProperty()
 	email = ndb.StringProperty()
-	password=ndb.StringProperty()
+	password = ndb.StringProperty()
+	active_sessions = ndb.PickleProperty(repeated = True)
 
 	@classmethod
 	def getUserIDs(self):
@@ -332,22 +336,61 @@ class Users(ndb.Model):
 	@classmethod
 	def register(self,_fname,_lname,_email,_password):
 		#print "Registering %s" %_username
-		query = ndb.gql("SELECT * FROM Users WHERE email = %s" % email)
+		query = Users.query(Users.email == _email).fetch()
 		if len(query) > 0:
 			return (-1,'There already exists an account with this email ID.')			
 		else:
-			user = Users(fname = _fname, lname = _lname,email=_email, password = _password)
+			user = Users(fname = _fname, lname = _lname, email=_email, password = _password)
 			key = user.put()
 			return (key.urlsafe(),'Registered Successfully.')
 
 	@classmethod
-	def checkUser(self,_user):
-		print _user
-		try:
-			_key = ndb.Key(urlsafe = _user)
-			user = Users.get_by_id(_key)
-		except :			
-			user = -1
-		
-		return user
+	def checkValidSession(self,_user,_session):
+		#Forst check for the user
+		print "Checking for user based on userid", _user
+		users = Users.query()
+		user = None
+		for u in users:
+			if str(u.key.id()) == _user:
+				user = u
+				break
+
+		print user
+		result = -1
+		if not user:
+			return result
+
+		for session in user.active_sessions:
+			print session[0], _session
+			if session[0] == _session:
+				if utils.time_difference(session[1],str(datetime.datetime.now()),7) :
+					result = user
+		return result
+
+	@classmethod
+	def createSessionID(self,_user):
+		#Expects real user entity
+		time = str(datetime.datetime.now())
+		string = utils.encrypt(utils.generate_string())
+		_user.active_sessions = _user.active_sessions + [(string,time)]
+		_user.put()
+		#print "Users-createSessionID: Created new ID for ", _user.email
+		return (string,time)
 			
+	@classmethod
+	def login(self,_email,_password):
+		session = (-1,'Does not exist')
+		_user = -1
+		query = Users.query(Users.email == _email).fetch()
+		for q in query:
+			if q.password == _password:
+				_user = q
+				session = self.createSessionID(q)
+
+		print "LOGIN FOUND USER: ",_user
+
+		if not _user == -1:
+			return (session[0],_user)
+		else:
+			print "Users-login UNSUCCESSFUL"
+			return (-1,-1)

@@ -5,6 +5,7 @@ import jinja2
 import webapp2
 
 import datastore		#Our databases
+import utils
 
 
 
@@ -22,17 +23,24 @@ class Handler(webapp2.RequestHandler):
 	def render(self, template, **kw):
 		self.write(self.render_Str(template, **kw))
 
+	def check_cookies(self,handler):
+		_user = handler.request.cookies.get('user')
+		_session = handler.request.cookies.get('session')
+		_user = datastore.Users.checkValidSession(_user,_session)
+		print "CHECKCOOKIES User found", _user
+		return _user
+
 
 class Registration(Handler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/html'
-		self.render("registration.html", userid = "Enter a unique user id", username = "Enter your name")
+		self.render("registration_customer.html", userid = "Enter a unique user id", username = "Enter your name")
 
 	def post(self):
 		register_status = 0 #If status = 0, so far success. If it goes -1, something's wrong
 		error = ''
 		self.response.headers['Content-Type'] = 'text/html'
-		__fname = self.request.get('fname')
+		_fname = self.request.get('fname')
 		_lname = self.request.get('lname')
 		_email=self.request.get('email')
 		_password = self.request.get('pwd')
@@ -44,15 +52,17 @@ class Registration(Handler):
 		_email,error = utils.verify_email(_email)
 		_password,error = utils.verify_passwords(_password,_c_password)
 		
-		if _fname != '-1' or _lname != '-1' or _email != '-1' or _password != '-1':
+		if _fname != '-1' and _lname != '-1' and _email != '-1' and _password != '-1':
 			register_status,error = datastore.Users.register(_fname,_lname,_email,_password)	#Now contains user key
-			print register_status
+			print "/registration-post: ", register_status
 		else: 
-			self.render("registration.html", error = error, fname = _fname, lname = _lname, email = _email)
+			print "/registration-post : INCORRECT DETECTED"
+			self.render("registration_customer.html", error = error, fname = _fname, lname = _lname, email = _email)
+			return
 
 
-		print "Successfully Registered"
-		self.response.headers.add_header('Set-cookie', 'user = %s' % register_status[0])
+		print "/registration-post: Successfully Registered"
+		#self.response.headers.add_header('Set-cookie', 'user = %s' % register_status[0])
 		self.redirect("/")		#Change to homepage.
 
 class ProductsPage(Handler):
@@ -96,13 +106,13 @@ class PopulatingServer(Handler):
 class MainPage(Handler):
 	def get(self):
 		#Check for cookies. If exist. or if not!
-		_user = self.request.cookies.get('user','guest')
-		_user = datastore.Users.checkUser(_user)
+		_user = self.check_cookies(self)
 		if _user != -1:
-			#User exists.
+			#User exists and cookie is correct.
 			self.render("home.html", user = _user.fname)
 		else:
-			self.response.headers.add_header('Set-cookie','user =  guest')
+			#self.response.headers.add_header('Set-cookie','user =  guest')
+			print "NO COOKIE FOUND ON HOME PAGE"
 			self.render("home.html")
 
 	def post(self): 	
@@ -111,13 +121,15 @@ class MainPage(Handler):
 
 		_password = utils.encrypt(_password)
 		_user = datastore.Users.login(_email,_password)
+
 		if _user == -1:
-		 	#Incorrect credentials
+		 	print "Incorrect credentials"
 		 	self.render("home.html", error = "Please recheck your credentials and try again,", email = _email)
 		else:
-		 	print "User successfully logged in!"
-		 	self.response.headers.add_header('Set-cookie','user = %s' % _user)
-		 	self.redirect("/")
+		 	print "User successfully logged in!", _user
+		 	self.response.headers.add_header('Set-cookie','user = %s' % _user[1].key.id())
+		 	self.response.headers.add_header('Set-cookie','session = %s' % _user[0])
+		 	self.redirect("/loggedin")
 
 class PrintUsers(Handler):
 	def get(self):
@@ -126,6 +138,13 @@ class PrintUsers(Handler):
 		for query in queries:
 			self.write("<p>%s</p>" % query)
 
+class WelcomePage(Handler):
+	def get(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			self.write(_user.fname)
+
+
 application = webapp2.WSGIApplication([
 									('/',MainPage),
 									('/products',ProductsPage),
@@ -133,6 +152,7 @@ application = webapp2.WSGIApplication([
 									('/getusers',PrintUsers),
 									('/test',TestingServer),
 									('/admin',PopulatingServer),
+									('/loggedin',WelcomePage)
 									], debug=True)
 
 
