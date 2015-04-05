@@ -3,6 +3,7 @@ import cgi
 import re
 import random
 import string
+import datetime
 
 
 def verify_name(name):
@@ -44,5 +45,9 @@ def encrypt(strng):
 def generate_string(size = 10, chars =  string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
 
-def time_difference(self,datetime_a,datetime_b):
+def time_difference(self,datetime_a,datetime_b,duration):
 	return True
+
+def assure(self,_list):
+	#Expected a list of tuples (entity, similarity index). Will sort and return all minus the index
+	return sorted(_list, key=lambda tup: tup[1])		

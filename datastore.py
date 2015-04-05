@@ -1,10 +1,11 @@
+import datetime
+
 from google.appengine.ext import ndb 
 from google.net.proto.ProtocolBuffer import ProtocolBufferDecodeError
+
+import utils
 import catalogue					#TO populate the Categories DB
 from fuzzywuzzy import fuzz 		#For better search
-import datetime
-import random
-import utils
 
 #Categories DB
 class Categories(ndb.Model):
@@ -56,7 +57,7 @@ class Categories(ndb.Model):
 		return children
 
 	@classmethod
-	def search(self,_name,_getchild = True,_ease = 90):
+	def search(self,_name,_getchild = False,_ease = 70):
 		#Get a list of categories which have the argument string in it.
 		#query = self.locate(_name,_getchild = True)
 
@@ -65,14 +66,14 @@ class Categories(ndb.Model):
 		for q in query:
 			similarity = fuzz.partial_ratio(_name.lower(), q.name.lower())
 			if similarity >= _ease:
-				results.append(q)
+				results.append((q,similarity))
 			if similarity == 100:
-				results = [q]
+				results = [(q,100)]
 				break
 
 		if _getchild:
 			for q in results:
-				children += self.getChildren(q)
+				children += self.getChildren(q[0])
 
 		return results
 
@@ -110,14 +111,14 @@ class Categories(ndb.Model):
 		for q  in query:
 			similarity = fuzz.ratio(_name.lower(),q.name.lower())
 			if similarity == 100:
-				results = [q]
+				results = [(q,100)]
 				break
 			if similarity >= _ease:
-				results.append(q)
+				results.append((q,similarity))
 
 		if _getchild:
 			for q in results:
-				children += self.getChildren(q)
+				children += self.getChildren(q[0])
 				
 		return results + children
 
@@ -126,10 +127,9 @@ class Categories(ndb.Model):
 		_cat_children = []
 		for child in _cat.children:
 			for cat in self.locate_primitive(child):
-				_cat_children.append(cat)
+				_cat_children.append((cat,0))
 		#print _cat_children
 		return _cat_children
-
 
 	@classmethod
 	def getRoots(self):
@@ -304,17 +304,12 @@ class Products(ndb.Model):
 
 	@classmethod
 	def getProductsInBrand(self,_brand,_ease = 80):
-		_brands = self.assure(self.searchBrand(_brand,_ease = 60))
+		_brands = utils.assure(self.searchBrand(_brand,_ease = 60))
 		if len(_brands) > 0:
 			_brand = _brands[0]
 		else:
 			return []
 		return Products.query(Products.brand == _brand[0]).fetch()
-
-	@classmethod
-	def assure(self,_list):
-		#Expected a list of tuples (entity, similarity index). Will sort and return all minus the index
-		return sorted(_list, key=lambda tup: tup[1])		
 
 
 #Setup Users DB. and its methods acting as wrappers
@@ -421,6 +416,6 @@ class Users(ndb.Model):
 				user.put()
 				result = user
 				break
-				
+
 		return result
 
