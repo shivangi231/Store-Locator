@@ -23,10 +23,15 @@ class Handler(webapp2.RequestHandler):
 	def render(self, template, **kw):
 		self.write(self.render_Str(template, **kw))
 
-	def check_cookies(self,handler):
+	def check_cookies(self, handler, logout = False):
 		_user = handler.request.cookies.get('user')
 		_session = handler.request.cookies.get('session')
+		if logout:
+			_user = datastore.Users.logout(_user,_session)
+			return _user
 		_user = datastore.Users.checkValidSession(_user,_session)
+
+
 		print "CHECKCOOKIES User found", _user
 		return _user
 
@@ -144,7 +149,12 @@ class WelcomePage(Handler):
 		if _user != -1:
 			self.write(_user.fname)
 
-
+class LogoutPage(Handler):
+	def get(self):
+		url =  self.request.get('url')
+		print "INITIATING LOGOUT ", url
+		self.check_cookies(self,logout = True)
+		self.redirect(url)
 application = webapp2.WSGIApplication([
 									('/',MainPage),
 									('/products',ProductsPage),
@@ -152,7 +162,8 @@ application = webapp2.WSGIApplication([
 									('/getusers',PrintUsers),
 									('/test',TestingServer),
 									('/admin',PopulatingServer),
-									('/loggedin',WelcomePage)
+									('/loggedin',WelcomePage),
+									('/logout',LogoutPage)
 									], debug=True)
 
 

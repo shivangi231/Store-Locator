@@ -394,3 +394,33 @@ class Users(ndb.Model):
 		else:
 			print "Users-login UNSUCCESSFUL"
 			return (-1,-1)
+
+	@classmethod
+	def logout(self,_user,_session):
+		print "Checking for user based on userid", _user
+		users = Users.query()
+		user = None
+		for u in users:
+			if str(u.key.id()) == _user:
+				user = u
+				break
+
+		print user
+		result = -1
+		if not user:
+			return result
+
+		for session in user.active_sessions[:]:
+			print session[0], _session
+			if session[0] == _session:
+				remaining_session  = []
+				for s in user.active_sessions:
+					if not s == session:
+						remaining_session.append(s)
+				user.active_sessions = remaining_session
+				user.put()
+				result = user
+				break
+				
+		return result
+
