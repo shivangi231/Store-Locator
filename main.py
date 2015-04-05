@@ -46,7 +46,6 @@ class Categories(ndb.Model):
 			return False
 		return True
 
-
 	@classmethod
 	def getLeafs(self,_category_key):
 		#To find all the leaf categories. (Which have no children)
@@ -72,14 +71,10 @@ class Categories(ndb.Model):
 
 		return children
 
-
 	@classmethod
 	def search(self,_name,_getchild = True,_ease = 90):
 		#Get a list of categories which have the argument string in it.
 		#query = self.locate(_name,_getchild = True)
-		#if len(query) > 1:
-			#print query[1]
-		#	return query
 
 		results = []
 		query = Categories.query().fetch()
@@ -171,6 +166,7 @@ class Products(ndb.Model):
 	def populate(self):
 		products = catalogue.getProducts()
 		for product in products:
+			print product
 			_name = product[0]
 			_brand = product[1]
 			_category = Categories.locate_primitive(product[2])[0].key #The numeric key.
@@ -187,7 +183,7 @@ class Products(ndb.Model):
 
 		results = []
 		for q in query:
-			similarity = fuzz.token_set_ratio(q.name,_name)
+			similarity = fuzz.partial_ratio(q.name,_name)
 			if similarity >= _ease:
 				results.append((q,similarity))
 
@@ -198,6 +194,7 @@ class Products(ndb.Model):
 		brand = ''		#The name of the brand. args may have a name similar but not equal. Hence this precaution.
 		query = ndb.gql("SELECT DISTINCT brand from Products").fetch()
 		#Try printing?
+		#print query
 		probable_brands = []
 
 		if _ease > 100:
@@ -205,21 +202,25 @@ class Products(ndb.Model):
 
 		for q in query:
 			#First try looking for ratio match.
-			similarity = fuzz.ratio(_name,q.brand)
+			similarity = fuzz.partial_ratio(_name.lower(),q.brand.lower())
+			print similarity,_name,q.brand
 			if similarity == 100:
 				probable_brands = [(q.brand,100)]
 				break
 			if similarity >= _ease:
-				probable_brands = (q.brand,similarity)
+				probable_brands.append((q.brand,similarity))
 
 		return probable_brands
 
 	@classmethod
 	def searchProductsInCategory(self,_name, _category, _ease = 60):
-		if not Categories.isLeaf(_category):
-			return searchProductInCategories(Categories.getLeafs(_category))
+		_category = Categories.locate_primitive(_category)[0]
+		
 
-		query = Products.query(Products.category == _category).fetch()
+		if not Categories.isLeaf(_category.key):
+			return searchProductInCategories(Categories.getLeafs(_category.key()))
+
+		query = Products.query(Products.category == _category.key).fetch()
 		
 		if _ease > 100:
 			_ease = 100
@@ -284,9 +285,22 @@ class Products(ndb.Model):
 	def getAll(self):
 		query = self.query().fetch()
 		products = []
-		for q in query: products.append(q.name + ' B:' + q.brand + ' C:' + q.category.urlsafe() + ' K:' + q.key.urlsafe())
+		for q in query: products.append(q.name + ' B: ' + q.brand + ' C: ' + q.category.urlsafe() + ' K: ' + q.key.urlsafe())
 		return products
 
+	@classmethod
+	def getProductsInBrand(self,_brand,_ease = 80):
+		_brands = self.assure(self.searchBrand(_brand,_ease = 60))
+		if len(_brands) > 0:
+			_brand = _brands[0]
+		else:
+			return []
+		return Products.query(Products.brand == _brand[0]).fetch()
+
+	@classmethod
+	def assure(self,_list):
+		#Expected a list of tuples (entity, similarity index). Will sort and return all minus the index
+		return sorted(_list, key=lambda tup: tup[1])		
 
 #Basic
 class MainPage(Handler):
@@ -331,6 +345,7 @@ class MainPage(Handler):
 
 class ProductsPage(Handler):
 	def get(self):
+		#Categories.populate()
 		#Products.populate()
 		categories = Products.getAll()
 		self.write("<ul>")
@@ -341,9 +356,14 @@ class ProductsPage(Handler):
 
 	def post(self):
 		_query = self.request.get('query')
-		categories = Products.searchProduct(_query)
-		for cat in categories:
-			entry = "<li>" + cat[0].name + " URL" + cat[0].key.urlsafe() + " BRAND:" + cat[0].brand + "</li>"
+		_category = self.request.get('category')
+		#categories = Products.searchProduct(_query)
+		#for cat in categories:
+		#	entry = "<li>" + cat[0].name + " URL: " + cat[0].key.urlsafe() + " BRAND: " + cat[0].brand + "</li>"
+		#	self.write(entry)
+		brands = Products.searchProductsInCategory(_query,_category)
+		for b in brands:
+			entry = "<li>" + b.name + " URL: " + b.key.urlsafe() + " BRAND: " + b.brand + "</li>"
 			self.write(entry)
 
 
