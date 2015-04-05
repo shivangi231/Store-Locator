@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb 
-
+from google.net.proto.ProtocolBuffer import ProtocolBufferDecodeError
 import catalogue					#TO populate the Categories DB
 from fuzzywuzzy import fuzz 		#For better search
 
@@ -144,9 +144,15 @@ class Categories(ndb.Model):
 						root.remove(r)
 		print len(all1), len(root)
 		return root
+
+	@classmethod
+	def getAllLeaves(self):
+		leaves = ndb.gql("SELECT * from Categories").fetch()
+		for element in leaves:
+			if not self.isLeaf(element.key):
+				leaves.remove(element)
+		return leaves
 		
-
-
 
 #Products DB
 class Products(ndb.Model):
@@ -307,12 +313,13 @@ class Products(ndb.Model):
 		#Expected a list of tuples (entity, similarity index). Will sort and return all minus the index
 		return sorted(_list, key=lambda tup: tup[1])		
 
+
 #Setup Users DB. and its methods acting as wrappers
 class Users(ndb.Model):
-	userid = ndb.StringProperty()
-	username = ndb.StringProperty()
-	password = ndb.StringProperty()
-	visits = ndb.IntegerProperty()
+	fname = ndb.StringProperty()
+	lname = ndb.StringProperty()
+	email = ndb.StringProperty()
+	password=ndb.StringProperty()
 
 	@classmethod
 	def getUserIDs(self):
@@ -323,11 +330,24 @@ class Users(ndb.Model):
 		return users
 		
 	@classmethod
-	def register(self,_userid,_username,_password):
-		print "Registering %s" %_username
-		if not _userid in self.getUserIDs():
-			user = Users(userid = _userid, username = _username, password = _password)
-			user.put()
-			return (0,'Success')
+	def register(self,_fname,_lname,_email,_password):
+		#print "Registering %s" %_username
+		query = ndb.gql("SELECT * FROM Users WHERE email = %s" % email)
+		if len(query) > 0:
+			return (-1,'There already exists an account with this email ID.')			
 		else:
-			return (-1,'Userid already exists. Please select a different one')			
+			user = Users(fname = _fname, lname = _lname,email=_email, password = _password)
+			key = user.put()
+			return (key.urlsafe(),'Registered Successfully.')
+
+	@classmethod
+	def checkUser(self,_user):
+		print _user
+		try:
+			_key = ndb.Key(urlsafe = _user)
+			user = Users.get_by_id(_key)
+		except :			
+			user = -1
+		
+		return user
+			

@@ -25,37 +25,35 @@ class Handler(webapp2.RequestHandler):
 
 class Registration(Handler):
 	def get(self):
-		print "/registration-get"
 		self.response.headers['Content-Type'] = 'text/html'
 		self.render("registration.html", userid = "Enter a unique user id", username = "Enter your name")
 
 	def post(self):
-		print "/registration-post"
-		register_status = (0,'Not begun yet') #If status = 0, so far success. If it goes -1, something's wrong
+		register_status = 0 #If status = 0, so far success. If it goes -1, something's wrong
+		error = ''
 		self.response.headers['Content-Type'] = 'text/html'
-		_userid = self.request.get('userid')
-		_username = self.request.get('username')
-		_password = self.request.get('password')
-		_c_password = self.request.get('c_password')
+		__fname = self.request.get('fname')
+		_lname = self.request.get('lname')
+		_email=self.request.get('email')
+		_password = self.request.get('pwd')
+		_c_password = self.request.get('crpwd')
 
-		_username = str(cgi.escape(_username,quote="True"))
-		_userid = str(cgi.escape(_userid,quote="True"))
 
-		#Encrypt the pwd
-
-		#Fix the value of all inputs
-		if _password != _c_password:
-			register_status = (-1,'The passwords do not match!')
-
-		#Attempt to register. Return value corresponding to success or failure
-		if register_status[0] == 0:
-			register_status = datastore.Users.register(_userid,_username,_password)
+		_fname,error = utils.verify_name(_fname)
+		_lname,error = utils.verify_name(_lname)
+		_email,error = utils.verify_email(_email)
+		_password,error = utils.verify_passwords(_password,_c_password)
+		
+		if _fname != '-1' or _lname != '-1' or _email != '-1' or _password != '-1':
+			register_status,error = datastore.Users.register(_fname,_lname,_email,_password)	#Now contains user key
 			print register_status
+		else: 
+			self.render("registration.html", error = error, fname = _fname, lname = _lname, email = _email)
 
-		if register_status[0] != 0:
-			self.render("registration.html", error = register_status[1], userid = _userid, username = _username)
-		else:
-			self.redirect("/getusers/")		#Change to homepage.
+
+		print "Successfully Registered"
+		self.response.headers.add_header('Set-cookie', 'user = %s' % register_status[0])
+		self.redirect("/")		#Change to homepage.
 
 class ProductsPage(Handler):
 	def get(self):
@@ -95,11 +93,31 @@ class PopulatingServer(Handler):
 	def post(self):
 		datastore.Products.populate()
 
-
 class MainPage(Handler):
 	def get(self):
-		print "/-get"
-		self.write("Welcome!")
+		#Check for cookies. If exist. or if not!
+		_user = self.request.cookies.get('user','guest')
+		_user = datastore.Users.checkUser(_user)
+		if _user != -1:
+			#User exists.
+			self.render("home.html", user = _user.fname)
+		else:
+			self.response.headers.add_header('Set-cookie','user =  guest')
+			self.render("home.html")
+
+	def post(self): 	
+		_email = self.request.get('email')
+		_password = self.request.get('password')
+
+		_password = utils.encrypt(_password)
+		_user = datastore.Users.login(_email,_password)
+		if _user == -1:
+		 	#Incorrect credentials
+		 	self.render("home.html", error = "Please recheck your credentials and try again,", email = _email)
+		else:
+		 	print "User successfully logged in!"
+		 	self.response.headers.add_header('Set-cookie','user = %s' % _user)
+		 	self.redirect("/")
 
 class PrintUsers(Handler):
 	def get(self):
@@ -112,9 +130,9 @@ application = webapp2.WSGIApplication([
 									('/',MainPage),
 									('/products',ProductsPage),
 									('/registration',Registration),
-									('/getusers/',PrintUsers),
-									('/test/',TestingServer),
-									('/admin/',PopulatingServer)
+									('/getusers',PrintUsers),
+									('/test',TestingServer),
+									('/admin',PopulatingServer),
 									], debug=True)
 
 
