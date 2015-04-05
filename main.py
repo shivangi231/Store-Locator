@@ -1,14 +1,17 @@
-import webapp2
 import os
-import jinja2
 import cgi
+import datetime
+import jinja2
+import webapp2
 from google.appengine.ext import ndb 
 
 #Custom imports
 import catalogue		#TO populate the Categories DB
 from fuzzywuzzy import fuzz
 
-#Setup templating engine
+
+
+#Setup templating engine - Jinja2
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),autoescape = True)
 class Handler(webapp2.RequestHandler):
@@ -312,46 +315,64 @@ class Products(ndb.Model):
 		#Expected a list of tuples (entity, similarity index). Will sort and return all minus the index
 		return sorted(_list, key=lambda tup: tup[1])		
 
-#Basic
-class MainPage(Handler):
-	def get(self):
-		self.response.headers['Content-Type'] = 'text/html'
-		visits = self.request.cookies.get('visits','0')
-		userid = self.request.cookies.get('  userid','guest')
-		if visits.isdigit():
-			visits = int(visits) + 1
+#Setup Users DB. and its methods acting as wrappers
+class Users(ndb.Model):
+	userid = ndb.StringProperty()
+	username = ndb.StringProperty()
+	password = ndb.StringProperty()
+	visits = ndb.IntegerProperty()
+
+	@classmethod
+	def getUserIDs(self):
+		users = []
+		query = self.query(projection=[Users.userid])
+		for user in query: users.append(str(user.userid))
+		print users
+		return users
+		
+	@classmethod
+	def register(self,_userid,_username,_password):
+		print "Registering %s" %_username
+		if not _userid in self.getUserIDs():
+			user = Users(userid = _userid, username = _username, password = _password)
+			user.put()
+			return (0,'Success')
 		else:
-			visits = 0
-		self.render("login.html", visits = visits)
-		self.response.headers.add_header('Set-cookie', 'visits = %s' % visits)
-		self.response.headers.add_header('Set-cookie', 'userid = %s' % str(userid))
+			return (-1,'Userid already exists. Please select a different one')			
+
+class Registration(Handler):
+	def get(self):
+		print "/registration-get"
+		self.response.headers['Content-Type'] = 'text/html'
+		self.render("registration.html", userid = "Enter a unique user id", username = "Enter your name")
 
 	def post(self):
-
-		#Fetch the username, from the form and from the cookie.
+		print "/registration-post"
+		register_status = (0,'Not begun yet') #If status = 0, so far success. If it goes -1, something's wrong
 		self.response.headers['Content-Type'] = 'text/html'
-		userid_from_cookies = self.request.cookies.get('userid','guest')
-		userid_from_form = self.request.get('username')
-		visits = self.request.cookies.get('visits','0')
+		_userid = self.request.get('userid')
+		_username = self.request.get('username')
+		_password = self.request.get('password')
+		_c_password = self.request.get('c_password')
 
-		#Print out the number of visits
-		if visits.isdigit():
-			visits = int(visits) + 1
+		_username = str(cgi.escape(_username,quote="True"))
+		_userid = str(cgi.escape(_userid,quote="True"))
+
+		#Encrypt the pwd
+
+		#Fix the value of all inputs
+		if _password != _c_password:
+			register_status = (-1,'The passwords do not match!')
+
+		#Attempt to register. Return value corresponding to success or failure
+		if register_status[0] == 0:
+			register_status = Users.register(_userid,_username,_password)
+			print register_status
+
+		if register_status[0] != 0:
+			self.render("registration.html", error = register_status[1], userid = _userid, username = _username)
 		else:
-			visits = 0
-
-		#If the names don't match, then simply welcome the new user differently.
-		if userid_from_form != userid_from_cookies:
-			self.write("Welcome Mr. %s" % userid_from_form)
-			visits = 0
-		
-		#Set cookies
-		self.response.headers.add_header('Set-cookie', 'visits = %s' % visits)
-		self.response.headers.add_header('Set-cookie', 'userid = %s' % str(userid_from_form))
-
-		#Render the form
-		self.render("welcome.html", visits = visits)	
-
+			self.redirect("/getusers/")		#Change to homepage.
 
 class ProductsPage(Handler):
 	def get(self):
@@ -376,11 +397,29 @@ class ProductsPage(Handler):
 			entry = "<li>" + b[0].name + " URL: " + b[0].key.urlsafe() + " BRAND: " + b[0].brand + "</li>"
 			self.write(entry)
 
+class FileServer(Handler):
+	def get(self):
+		print "/css-get"
+		print self.request
 
+class MainPage(Handler):
+	def get(self):
+		print "/-get"
+		self.write("Welcome!")
+
+class PrintUsers(Handler):
+	def get(self):
+		print "/getusers-get"
+		queries = Users.getUserIDs()
+		for query in queries:
+			self.write("<p>%s</p>" % query)
 
 application = webapp2.WSGIApplication([
 									('/',MainPage),
 									('/products',ProductsPage)
+									('/registration',Registration),
+									('/getusers/',PrintUsers),
+									('/css/',FileServer)
 									], debug=True)
 
 
