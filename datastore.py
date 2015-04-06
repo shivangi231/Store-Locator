@@ -60,17 +60,14 @@ class Categories(ndb.Model):
 	def search(self,_name,_getchild = False,_ease = 70):
 		#Get a list of categories which have the argument string in it.
 		#query = self.locate(_name,_getchild = True)
-
 		results = []
 		children = []
 		query = Categories.query().fetch()
 		for q in query:
 			similarity = fuzz.partial_ratio(_name.lower(), q.name.lower())
+			print similarity, q.name, _name
 			if similarity >= _ease:
 				results.append((q,similarity))
-			if similarity == 100:
-				results = [(q,100)]
-				break
 
 		if _getchild:
 			for q in results:
@@ -351,6 +348,7 @@ class Products(ndb.Model):
 			distinct_categories.append(keys.get())
 		return distinct_categories
 
+
 #Setup Users DB. and its methods acting as wrappers
 class Users(ndb.Model):
 	fname = ndb.StringProperty()
@@ -380,7 +378,7 @@ class Users(ndb.Model):
 
 	@classmethod
 	def checkValidSession(self,_user,_session):
-		#Forst check for the user
+		#First check for the user
 		print "Checking for user based on userid", _user
 		users = Users.query()
 		user = None
@@ -458,3 +456,50 @@ class Users(ndb.Model):
 
 		return result
 
+
+#Shopkeeper
+class Shops(ndb.Model):
+	#Add database things from Nikhil
+
+
+
+
+	#Register function
+
+
+
+
+
+	#Login Function
+	@classmethod
+	def login(self,_email,_password):
+		session = (-1,'Does not exist')
+		_shop = -1
+		query = Shops.query(Shops.email == _email).fetch()
+		for q in query:
+			if q.password == _password:
+				_shop = q
+				session = self.createSessionID(q)
+
+		print "LOGIN FOUND SHOP: ",_shop
+
+		if not _shop == -1:
+			return (session[0],_user)
+		else:
+			print "Shops-login UNSUCCESSFUL"
+			return (-1,-1)
+
+	@classmethod
+	def createSessionID(self,_shop):
+		#Expects real shopkeeper entity
+		time = datetime.datetime.now()
+		string = utils.encrypt(utils.generate_string())
+		_user.active_sessions = _user.active_sessions + [(string,time)]
+		_user.put()
+		return (string,time)
+
+
+	@classmethod
+	def checkValidSession(self,_shop,_session):
+		print "Checking for user based on userid", _shop
+		shops = Shops.query()

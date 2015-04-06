@@ -46,7 +46,13 @@ def generate_string(size = 10, chars =  string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for _ in range(size))
 
 def time_difference(datetime_a,datetime_b,duration):
-	return True
+	date1 = datetime.datetime.strptime(datetime_a, '%Y-%m-%d %H:%M:%S.%f')
+	date2 = datetime.datetime.strptime(datetime_b, '%Y-%m-%d %H:%M:%S.%f')
+	days=abs((date2 - date1).days)
+	if days>= duration:
+		return True
+	else :
+		return False
 
 def sort(_list):
 	#Expected a list of tuples (entity, similarity index). Will sort and return all minus the index
@@ -80,7 +86,7 @@ def join(_list1,_list2,_list3,_distinct = False):
 		_list3 = []		
 
 	_list =  _list1 + _list2 + _list3
-	if len(_list) < 0:
+	if not len(_list) > 0:
 		return []
 	if _distinct:
 		_list_unique = [_list[0]]
