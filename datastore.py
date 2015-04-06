@@ -62,6 +62,7 @@ class Categories(ndb.Model):
 		#query = self.locate(_name,_getchild = True)
 
 		results = []
+		children = []
 		query = Categories.query().fetch()
 		for q in query:
 			similarity = fuzz.partial_ratio(_name.lower(), q.name.lower())
@@ -75,7 +76,7 @@ class Categories(ndb.Model):
 			for q in results:
 				children += self.getChildren(q[0])
 
-		return results
+		return results + children
 
 	@classmethod
 	def getAll(self):
@@ -110,6 +111,7 @@ class Categories(ndb.Model):
 		query = ndb.gql("SELECT * FROM Categories")
 		for q  in query:
 			similarity = fuzz.ratio(_name.lower(),q.name.lower())
+			#print similarity, q.name, _name
 			if similarity == 100:
 				results = [(q,100)]
 				break
@@ -128,7 +130,7 @@ class Categories(ndb.Model):
 		for child in _cat.children:
 			for cat in self.locate_primitive(child):
 				_cat_children.append((cat,0))
-		#print _cat_children
+		print "GET CHILDREN- ",_cat_children
 		return _cat_children
 
 	@classmethod
@@ -142,10 +144,10 @@ class Categories(ndb.Model):
 			children = self.getChildren(q)
 			for child in children:
 				for r in root:
-					if r.key == child.key:
-						print "REMOVING", r.name
+					if r.key == child[0].key:
+						#print "REMOVING", r.name
 						root.remove(r)
-		print len(all1), len(root)
+		#print len(all1), len(root)
 		return root
 
 	@classmethod
@@ -194,7 +196,7 @@ class Products(ndb.Model):
 		return results
 
 	@classmethod
-	def searchBrand(self, _name,_ease = 90):
+	def searchBrand(self, _name,_ease = 85):
 		brand = ''		#The name of the brand. args may have a name similar but not equal. Hence this precaution.
 		query = ndb.gql("SELECT DISTINCT brand from Products").fetch()
 		#Try printing?
@@ -294,7 +296,6 @@ class Products(ndb.Model):
 
 		return results		
 
-
 	@classmethod
 	def getAll(self):
 		query = self.query().fetch()
@@ -303,14 +304,52 @@ class Products(ndb.Model):
 		return products
 
 	@classmethod
-	def getProductsInBrand(self,_brand,_ease = 80):
-		_brands = utils.assure(self.searchBrand(_brand,_ease = 60))
+	def getProductsInBrand(self,_brand):
+		_brands = utils.sort(self.searchBrand(_brand,_ease = 60))
 		if len(_brands) > 0:
 			_brand = _brands[0]
 		else:
 			return []
 		return Products.query(Products.brand == _brand[0]).fetch()
 
+	@classmethod
+	def getProductsInBrands(self,_brands_list):
+		_products = []
+		for _brand in _brands_list:
+			_products += self.getProductsInBrand(_brand)
+		return _products
+	
+
+	@classmethod
+	def getProductsInCategory(self,_category):
+		#Expects entity
+		_products = Products.query(Products.category == _category.key).fetch()
+		return _products
+
+	@classmethod
+	def getProductsInCategories(self,_category_list):
+		#Expects entity
+		_products = []
+		for _category in _category_list:
+			_products += self.getProductsInCategory(_category)
+		return _products
+
+	@classmethod
+	def getCategoriesForProducts(self,_products):
+		#Expects products entity.
+		#Returns category entity.
+		distinct_category_keys = []
+		for _product in _products:
+			if _product.category not in distinct_category_keys:
+				distinct_category_keys.append(_product.category)
+		#print "PRODUCT LENGTH: ", len(_products)
+		#print distinct_category_keys
+
+		#Now to find the category entities
+		distinct_categories = []
+		for keys in distinct_category_keys:
+			distinct_categories.append(keys.get())
+		return distinct_categories
 
 #Setup Users DB. and its methods acting as wrappers
 class Users(ndb.Model):
