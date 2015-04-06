@@ -356,6 +356,8 @@ class Users(ndb.Model):
 	email = ndb.StringProperty()
 	password = ndb.StringProperty()
 	active_sessions = ndb.PickleProperty(repeated = True)
+	shopping_list = ndb.KeyProperty(kind = Products,repeated = True)
+	shopping_list_archived = ndb.KeyProperty(kind = Products,repeated = True)
 
 	@classmethod
 	def getUserIDs(self):
@@ -392,8 +394,9 @@ class Users(ndb.Model):
 		if not user:
 			return result
 
+		#print "IN CHECK VALID SESSION: ", user
 		for session in user.active_sessions:
-			print session[0], _session
+			#print session[0], _session
 			if session[0] == _session:
 				if utils.time_difference(session[1],str(datetime.datetime.now()),7) :
 					result = user
@@ -455,6 +458,24 @@ class Users(ndb.Model):
 				break
 
 		return result
+
+	@classmethod
+	def add_product(self,_product,_user_key):
+		#Expects a user key here. Not just name
+		#Expects a product entity key here.
+		return True
+
+
+	@classmethod
+	def remove_product(self,_product,_user_key):
+		#Expects a user key & product key
+		return True
+
+	@classmethod
+	def add_products(self,_product_list,_user_key):
+		#Expects a list of product list keys
+		#Expects a user key
+		return True
 
 
 #Shopkeeper

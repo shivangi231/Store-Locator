@@ -7,8 +7,7 @@ import webapp2
 import datastore		#Our databases
 import utils			#Misc utility class
 
-
-
+print "Server starting"
 #Setup templating engine - Jinja2
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),autoescape = True)
@@ -37,7 +36,6 @@ class Handler(webapp2.RequestHandler):
 		_user = datastore.Users.checkValidSession(_user,_session)
 		print "CHECKCOOKIES User found", _user
 		return _user
-
 
 class Registration(Handler):
 	def get(self):
@@ -252,6 +250,33 @@ class SearchPageProduct(Handler):
 			#Throw error message
 			self.write("Sorry no product found. Please go back and try again")
 
+class ShoppingListPage(Handler):
+	def get(self):
+		#Authenticate the user based on cookies. See get of mainpage on how to do so.
+
+		return True
+		#Fetch user's shopping list
+
+
+
+		#Render the shopping list page. by simply sending the required data to frontend through self.render
+			#See how i rendered data in search page
+
+class ShoppingListAdd(Handler):
+	def get(self):
+		#Authenticate the user based on cookies. See get of mainpage on how to do so.
+
+		return True
+	
+
+class ShoppingListRemove(Handler):
+	def get(self):
+		#Authenticate the user based on cookies. See get of mainpage on how to do so.
+
+		return True
+	
+
+
 application = webapp2.WSGIApplication([
 									('/',MainPage),
 									('/products',ProductsPage),
@@ -261,7 +286,10 @@ application = webapp2.WSGIApplication([
 									('/admin',PopulatingServer),
 									('/loggedin',WelcomePage),
 									('/logout',LogoutPage),
-									('/search',SearchPageProduct)
+									('/search',SearchPageProduct),
+									('/shoppinglist',ShoppingListPage)
+									('/addshoppinglist',ShoppingListAdd)
+									('/removeshoppinglist',ShoppingListRemove)
 									], debug=True)
 
 

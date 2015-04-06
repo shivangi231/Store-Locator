@@ -49,7 +49,8 @@ def time_difference(datetime_a,datetime_b,duration):
 	date1 = datetime.datetime.strptime(datetime_a, '%Y-%m-%d %H:%M:%S.%f')
 	date2 = datetime.datetime.strptime(datetime_b, '%Y-%m-%d %H:%M:%S.%f')
 	days=abs((date2 - date1).days)
-	if days>= duration:
+	
+	if days<= duration:
 		return True
 	else :
 		return False
