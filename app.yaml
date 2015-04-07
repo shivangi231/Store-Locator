@@ -9,8 +9,14 @@ libraries:
   version: latest
 - name: jinja2
   version: latest
+- name: pycrypto
+  version: latest
+- name: endpoints
+  version: 1.0
 
 handlers:
+- url: /_ah/spi/.*
+  script: store_locator_api.APPLICATION
 - url: /css/
   static_dir: templates/css
 - url: /images/
