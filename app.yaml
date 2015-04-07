@@ -21,5 +21,7 @@ handlers:
   static_dir: templates/index_files
 - url: /app
   script: api.application
+- url: /shop/.*
+  script: shop.application
 - url: /.*
   script: main.application

@@ -10,36 +10,36 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <head>
 	<title>The Store Locator - Registe</title>
 		<meta charset="utf-8">
-		<link href="css/reg_style.css" rel='stylesheet' type='text/css' />
+		<link href="css/cus_home_reg_style.css" rel='stylesheet' type='text/css' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 		<!--webfonts-->
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
 		<!--//webfonts-->
 </head>
-<body>
+<body> {{error}}		 		
 	
 				 <!-----start-main---->
 				<div class="registration-form">
 					<div class="head">
-						<img src="images/mem2.jpg" alt=""/>
+						<img src="images/cus_home_images/mem2.jpg" alt=""/>
 						
 					</div>
 				<form method="POST">
 					<li>
-						<input type="text" class="text" name="fname" value="{{fname}}" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'First Name';}" ><a href="#" class=" icon user"></a>
+						<input type="text" class="text" name="fname" value="{{fname}}" ><a href="#" class=" icon user"></a>
 					</li>
 					<li>
-						<input type="text" class="text" name="lname" value="{{lname}}" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Last Name';}" ><a href="#" class=" icon user"></a>
+						<input type="text" class="text" name="lname" value="{{lname}}" ><a href="#" class=" icon user"></a>
 					</li>
 					<li>
-						<input type="text" class="text" name="email" value="{{email}}" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'E-mail';}" ><a href="#" class=" icon user"></a>
+						<input type="text" class="text" name="email" value="{{email}}" ><a href="#" class=" icon user"></a>
 					</li>
 					<li>
-						<input type="password" name= "pwd" placeholder="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"><a href="#" class=" icon lock"></a>
+						<input type="password" name= "pwd" placeholder="password" value="Password" ><a href="#" class=" icon lock"></a>
 					</li>
 					<li>
-						<input type="password" name= "crpwd" placeholder="re enter password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"><a href="#" class=" icon lock"></a>
+						<input type="password" name= "crpwd" placeholder="re enter password" value="Password" ><a href="#" class=" icon lock"></a>
 					</li>
 		            
 					<div class="p-container">
@@ -50,6 +50,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 			</div>
 			<!--//End-login-form-->
 		 
-		 		
+
 </body>
 </html>

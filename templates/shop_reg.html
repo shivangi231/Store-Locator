@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	
+<head>
+	<title>Store Locator - Register</title>
+		<meta charset="utf-8">
+		<link href="/css/shop_register_style.css" rel='stylesheet' type='text/css' />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+		<!--webfonts-->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
+		<!--//webfonts-->
+</head>
+<body>
+	
+				 <!-----start-main---->
+				<div class="registration-form">
+					<div class="head">
+						<img src="" alt=""/>
+						
+					</div>
+				<form method="POST">
+					<li>
+						<input type="text" class="text" value="{{fname}}" name="fname" ><a href="#" class=" icon user"></a>
+					</li>
+					<li>
+						<input type="text" class="text" name="lname" value="{{lname}}" ><a href="#" class=" icon user"></a>
+					</li>
+					<li>
+						<input type="text" class="text" name="shop_name" value="{{shop_name}}" ><a href="#" class=" icon user"></a>
+					</li>
+					<li>
+						<input type="text" class="text" name="shop_add" value="{{shop_add}}" ><a href="#" class=" icon user"></a>
+					</li>
+					<li>
+						<input type="text" class="text" value="{{mobile}}" name="mobile" ><a href="#" class=" icon user"></a>
+					</li>
+					<li>
+						<input type="text" class="text" name="email" value="{{email}}" ><a href="#" class=" icon user"></a>
+					</li>
+					<li>
+						<input type="password"  name="pwd" value="Password" ><a href="#" class=" icon lock"></a>
+
+					</li>
+						
+					<li>
+						<input type="password"  name= "crpwd" value="Re-type Password" ><a href="#" class=" icon lock"></a>
+					</li>
+					
+						
+					
+					<div class="p-container">
+							<input type="submit"  value="SIGN UP" >
+							<div class="clear"> </div>
+					</div>
+				</form>
+
+			</div>
+			<div class="alert alert-warning" role="alert">{{error}}</div>
+		  <!-----start-copyright---->
+   					<div class="copy-right">
+
+						<p>Store Locator</a></p> 
+					</div>
+				<!-----//end-copyright---->
+		 		
+</body>
+</html>

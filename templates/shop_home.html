@@ -1,0 +1,349 @@
+<!--
+Author: Team 23
+-->
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Store Locator_Shopkeeper Loading page</title>
+		<link href="/css/shop_home_style.css" rel="stylesheet" type="text/css" media="all" />
+		<link href="/css/shop_home_bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
+		<!-- js -->
+		<script src="/js/shop_home_jquery.min.js"></script>
+		<!-- //js -->
+		<!-- for-mobile-apps -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="keywords" content="Agriculture_firm Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
+		Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+				function hideURLbar(){ window.scrollTo(0,1); } </script>
+		<!-- //for-mobile-apps -->
+		<!-- start-smoth-scrolling -->
+		<script type="text/javascript" src="/js/shop_home_move-top.js"></script>
+		<script type="text/javascript" src="/js/shop_home_easing.js"></script>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$(".scroll").click(function(event){		
+					event.preventDefault();
+					$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+				});
+			});
+		</script>
+<!-- start-smoth-scrolling -->
+</head>
+	
+<body>
+<!-- banner -->
+	<div id="home" class="banner">
+	<div class="container">
+		<div class="navi">
+				<div class="head-logo">
+					<h3>STORE LOCATOR</span></h3>
+				</div>
+				<div class="banner-nav">
+					<span class="menu"><img src="/images/shop_home_images/menu.png" alt=" "/></span>
+						<nav class="cl-effect-3">
+							<ul class="nav1">
+								<li class="active"><a href="#home" class="scroll">HOME</a></li>
+								<li><a href="#products" class="scroll">CATEGORIES</a></li>
+								<li><a href="#contact" class="scroll">ABOUT US</a></li>
+							</ul>
+						</nav>
+				</div>
+				<div class="clearfix"> </div>
+		</div>
+				<!-- script for menu -->
+					<script> 
+						$( "span.menu" ).click(function() {
+						$( "ul.nav1" ).slideToggle( 300, function() {
+						 // Animation complete.
+						});
+						});
+					</script>
+				<!-- //script for menu -->
+		<div class="banner-info">
+			<div class="banner-info-left">
+				<h3>OUR MISSION IS TO EXPAND YOUR BUSINESS</span></h3>
+				
+				<div class="start">
+					<a href="#">Learn More...</a>
+				</div>
+			</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+			<link rel="stylesheet" href="/css/shop_home_swipebox.css">
+				<script src="/js/shop_home_jquery.swipebox.min.js"></script> 
+					<script type="text/javascript">
+						jQuery(function($) {
+							$(".swipebox").swipebox();
+						});
+					</script>
+				<!-- Portfolio Ends Here -->
+				<script type="text/javascript" src="/js/shop_home_jquery.mixitup.min.js"></script>
+					<script type="text/javascript">
+					$(function () {
+						var filterList = {
+							init: function () {
+								// MixItUp plugin
+							// http://mixitup.io
+							$('#portfoliolist').mixitup({
+								targetSelector: '.portfolio',
+								filterSelector: '.filter',
+								effects: ['fade'],
+								easing: 'snap',
+								// call the hover effect
+								onMixEnd: filterList.hoverEffect()
+							});	
+						},
+						hoverEffect: function () {
+							// Simple parallax effect
+							$('#portfoliolist .portfolio').hover(
+								function () {
+									$(this).find('.label').stop().animate({bottom: 0}, 200, 'easeOutQuad');
+									$(this).find('img').stop().animate({top: -30}, 500, 'easeOutQuad');				
+								},
+								function () {
+									$(this).find('.label').stop().animate({bottom: -40}, 200, 'easeInQuad');
+									$(this).find('img').stop().animate({top: 0}, 300, 'easeOutQuad');								
+								}		
+							);				
+						}
+					};
+					// Run the show!
+						filterList.init();
+					});	
+					</script>
+	</div>
+	</div>
+<!-- //banner -->
+<!-- banner-bottom -->
+	<div class="banner-bottom">
+	<div class="container">
+<!-- Slider-starts-Here -->
+				<script src="/js/shop_home_responsiveslides.min.js"></script>
+				 <script>
+				    // You can also use "$(window).load(function() {"
+				    $(function () {
+				      // Slideshow 4
+				      $("#slider3").responsiveSlides({
+				        auto: true,
+				        pager: true,
+				        nav: false,
+				        speed: 500,
+				        namespace: "callbacks",
+				        before: function () {
+				          $('.events').append("<li>before event fired.</li>");
+				        },
+				        after: function () {
+				          $('.events').append("<li>after event fired.</li>");
+				        }
+				      });
+				
+				    });
+				  </script>
+			<!--//End-slider-script -->
+			<div  id="top" class="callbacks_container">
+				<ul class="rslides" id="slider3">
+					<li>
+						<div class="banner-bottom-info">
+							<h3>We are Store Locator</h3>
+							<p> </p>
+						</div>
+					</li>
+					<li>
+						<div class="banner-bottom-info">
+							<h3>We combine the ease of shopping offline and provide the customers to know shops in their area better.</h3>
+							<p> </p>
+						</div>
+					</li>
+					<li>
+						<div class="banner-bottom-info">
+							<h3>We provide you the smartest and cheapest mode of advertisement and a platform to combine your bussiness with technology.</h3>
+							<p> </p>
+						</div>
+					</li>
+				</ul>
+			</div>
+	</div>
+	</div>
+
+	
+	
+	
+<!-- //about-us -->
+<!-- //login -->
+
+<div class="login-06">
+		<div class="fourth-login">
+			<form class="four" method="post">
+				<div class="green">
+					<input class="text" value="{{email}}" name="email" type="text">
+				</div>
+				<div class="block">
+					<input value="password" type="password" name="password">
+				</div>
+					<input value="LOG IN" type="submit"> 
+					<div class="learnmore"><a href="/shop/register" class="hvr-sweep-to-right button">REGISTER NOW</a></div>
+			</form>
+			
+		</div>
+		</div>
+
+	</div>	
+
+
+<!-- //pricing -->
+<!-- gallery -->
+	<div id="products" class="portfolio">
+	<div class="container">
+<!-- Portfolio Starts Here -->
+	<div class="portfolios entertain_box  wow fadeInUp" data-wow-delay="0.4s" id="project">
+			<div class="portfolio-info">
+				<h3>CATEGORIES</h3>
+				<p class="para">Products are divided into these categories.
+					<span></span></p>
+				<div class="strip"> </div>
+			</div>
+					<ul id="filters" class="clearfix">
+							<li><span class="filter active" data-filter="app card icon web">ALL</span></li>
+							<li><span class="filter" data-filter="app">MOBILE & ACCESSORIES</span></li>
+							<li><span class="filter" data-filter="card">FOOTWEAR</span></li>
+
+					</ul>
+		
+					<div id="portfoliolist">
+						<div class="portfolio app mix_all" data-cat="app" style="display: inline-block; opacity: 1;">
+							<div class="portfolio-wrapper">		
+								<a href="images/shop_home_images/s-1.jpg" class="b-link-stripe b-animate-go   swipebox"  title="">
+								<img class="img-responsive" src="/images/shop_home_images/s-11.jpg" />
+								<div class="b-wrapper">
+								<h2 class="b-animate b-from-left    b-delay03 ">
+									<img class="img-responsive" src="/images/shop_home_images/plus.png" class="zoom" alt=""/>
+								</h2>
+								</div></a>
+							</div>
+						</div>				
+						<div class="portfolio card mix_all" data-cat="card" style="display: inline-block; opacity: 1;">
+							<div class="portfolio-wrapper">		
+								<a href="images/shop_home_images/s-2.jpg" class="b-link-stripe b-animate-go   swipebox"  title="">
+								<img class="img-responsive" src="/images/shop_home_images/s-22.jpg" />
+								<div class="b-wrapper">
+									<h2 class="b-animate b-from-left    b-delay03 ">
+										<img class="img-responsive" src="/images/shop_home_images/plus.png" class="zoom" alt=""/>
+									</h2>
+								</div></a>
+							</div>
+						</div>		
+						<div class="portfolio app mix_all" data-cat="app" style="display: inline-block; opacity: 1;">
+							<div class="portfolio-wrapper">		
+								<a href="/images/shop_home_images/s-3.jpg" class="b-link-stripe b-animate-go   swipebox"  title="">
+								<img class="img-responsive" src="/images/shop_home_images/s-33.jpg" />
+								<div class="b-wrapper">
+								<h2 class="b-animate b-from-left    b-delay03 ">
+									<img class="img-responsive" src="/images/shop_home_images/plus.png" class="zoom" alt=""/>
+								</h2>
+								</div></a>
+							</div>
+						</div>				
+						
+					<div class="clearfix"></div>
+					</div>
+		
+	</div>
+			<link rel="stylesheet" href="/css/shop_home_swipebox.css">
+				<script src="/js/shop_home_jquery.swipebox.min.js"></script> 
+					<script type="text/javascript">
+						jQuery(function($) {
+							$(".swipebox").swipebox();
+						});
+					</script>
+				<!-- Portfolio Ends Here -->
+				<script type="text/javascript" src="/js/shop_home_jquery.mixitup.min.js"></script>
+					<script type="text/javascript">
+					$(function () {
+						var filterList = {
+							init: function () {
+								// MixItUp plugin
+							// http://mixitup.io
+							$('#portfoliolist').mixitup({
+								targetSelector: '.portfolio',
+								filterSelector: '.filter',
+								effects: ['fade'],
+								easing: 'snap',
+								// call the hover effect
+								onMixEnd: filterList.hoverEffect()
+							});	
+						},
+						hoverEffect: function () {
+							// Simple parallax effect
+							$('#portfoliolist .portfolio').hover(
+								function () {
+									$(this).find('.label').stop().animate({bottom: 0}, 200, 'easeOutQuad');
+									$(this).find('img').stop().animate({top: -30}, 500, 'easeOutQuad');				
+								},
+								function () {
+									$(this).find('.label').stop().animate({bottom: -40}, 200, 'easeInQuad');
+									$(this).find('img').stop().animate({top: 0}, 300, 'easeOutQuad');								
+								}		
+							);				
+						}
+					};
+					// Run the show!
+						filterList.init();
+					});	
+					</script>
+	</div>
+	</div>
+<!-- //gallery -->
+<!-- contact -->
+	<div id="contact" class="contact">
+	<div class="container">
+		<h3>CONTACT US</h3>
+		<p class="para">Your feedback is valuable.
+			<span>Please reach out to us.</span></p>
+
+		<div class="contact-contact">
+			<form>
+				<input type="text" placeholder="Name" required=" ">
+				<input type="text" placeholder="E-mail" required=" ">
+				<input type="text" placeholder="Subject" required=" ">
+				<textarea placeholder="Message" required=" "></textarea>
+				<input type="submit" value="SEND MESSAGE">
+			</form>
+		</div>
+	</div>
+	</div>
+<!-- //contact -->
+<!-- footer -->
+	<div class="footer">
+	<div class="container">
+		<div class="temp">
+			<p>Store Locator</a></p>
+		<div class="clearfix"> </div>
+	</div>
+	</div>
+<!-- //footer -->
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+									$(document).ready(function() {
+										/*
+										var defaults = {
+								  			containerID: 'toTop', // fading element id
+											containerHoverID: 'toTopHover', // fading element hover id
+											scrollSpeed: 1200,
+											easingType: 'linear' 
+								 		};
+										*/
+										
+										$().UItoTop({ easingType: 'easeOutQuart' });
+										
+									});
+	</script>
+<!-- //here ends scrolling icon -->
+</body>
+</html>

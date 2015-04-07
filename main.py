@@ -40,7 +40,7 @@ class Handler(webapp2.RequestHandler):
 class Registration(Handler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/html'
-		self.render("registration_customer.html", userid = "Enter a unique user id", username = "Enter your name")
+		self.render("registration_customer.html", fname = "First Name", lname = "Last Name", email = "Email ID")
 
 	def post(self):
 		register_status = 0 #If status = 0, so far success. If it goes -1, something's wrong
@@ -287,15 +287,8 @@ application = webapp2.WSGIApplication([
 									('/loggedin',WelcomePage),
 									('/logout',LogoutPage),
 									('/search',SearchPageProduct),
-									('/shoppinglist',ShoppingListPage)
-									('/addshoppinglist',ShoppingListAdd)
+									('/shoppinglist',ShoppingListPage),
+									('/addshoppinglist',ShoppingListAdd),
 									('/removeshoppinglist',ShoppingListRemove)
 									], debug=True)
 
-
-
-
-#TODO
-	#Fetch links,number of products and name of category
-	#Implement basic search of sub categories. How? Well its really simple.
-		#What i want to do is to simply - fetch all the things that carry the entire text of what we want!

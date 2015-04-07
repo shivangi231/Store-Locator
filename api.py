@@ -29,7 +29,7 @@ class FrontPage(Handler):
 	def get(self):
 		if not authenticate():
 			self.redirect("/unauth")
-		self.write()
+		self.write(#wRITE THE JSON DATA AS PER REQUIRED)
 
 
 application = webapp2.WSGIApplication([

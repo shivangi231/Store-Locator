@@ -1,0 +1,11 @@
+1. See if customer pages are rendered
+2. See if shopkeeper pages are rendered
+3. See if customer populating works
+4. See if customer can register
+5. See if customer can log in
+6. See if he can search
+7. See if shopkeeper can register
+8. See if shopkeeper can login
+
+
+#Proceed to Commit#

@@ -480,16 +480,43 @@ class Users(ndb.Model):
 
 #Shopkeeper
 class Shops(ndb.Model):
-	#Add database things from Nikhil
-
-
-
+	fname = ndb.StringProperty()
+	lname = ndb.StringProperty()
+	email = ndb.StringProperty(required = True)
+	password = ndb.StringProperty(required = True)
+	mobile = ndb.IntegerProperty()
+	shop_name = ndb.StringProperty()
+	shop_address = ndb.StringProperty()
+	location = ndb.GeoPtProperty()
+	active_sessions = ndb.PickleProperty(repeated = True)
 
 	#Register function
+	@classmethod
+	def register(self,_email,_fname,_lname,_password,_mobile,_shop_name,_shop_address):
+		#Assumes verified values
+		if self.shopExists(_shop_name,_email):
+			entity = Shops(fname = _fname, lname = _lname, email = _email, password = _password, mobile = _mobile, shop_name = _shop_name, shop_address = _shop_address)
+			entity.put()
+			print "shopdb: register: ", entity
+			return (0,'Success')
+		else:
+			print "User already exists"
+			return (-1,'This shop already exists')
 
-
-
-
+	@classmethod
+	def shopExists(self,_shop_name,_email,_need_user = False):
+		#If need user and user not exist then will return nonetype!
+		query = Shops.query(Shops.email == _email).fetch()
+		#print "shopdb: shopexits: query is ", query
+		if len(query) > 0:
+			if _need_user:
+				return None
+			return False
+		
+		print "shopdb: shopexists: no user found", _email
+		if _need_user:
+			return None
+		return True
 
 	#Login Function
 	@classmethod
@@ -505,7 +532,7 @@ class Shops(ndb.Model):
 		print "LOGIN FOUND SHOP: ",_shop
 
 		if not _shop == -1:
-			return (session[0],_user)
+			return (session[0],_shop)
 		else:
 			print "Shops-login UNSUCCESSFUL"
 			return (-1,-1)
@@ -513,10 +540,10 @@ class Shops(ndb.Model):
 	@classmethod
 	def createSessionID(self,_shop):
 		#Expects real shopkeeper entity
-		time = datetime.datetime.now()
+		time = str(datetime.datetime.now())
 		string = utils.encrypt(utils.generate_string())
-		_user.active_sessions = _user.active_sessions + [(string,time)]
-		_user.put()
+		_shop.active_sessions = _shop.active_sessions + [(string,time)]
+		_shop.put()
 		return (string,time)
 
 
@@ -524,3 +551,22 @@ class Shops(ndb.Model):
 	def checkValidSession(self,_shop,_session):
 		print "Checking for user based on userid", _shop
 		shops = Shops.query()
+
+		shop = None
+		for s in shops:
+			if str(s.key.id()) == _shop:
+				shop = s
+				break
+
+		print shop
+		result = -1
+		if not shop:
+			return result
+
+		print "checkvalidsession: ", shop.active_sessions
+		for session in shop.active_sessions:
+			#print session[0], _session
+			if session[0] == _session:
+				if utils.time_difference(session[1],str(datetime.datetime.now()),7) :
+					result = shop
+		return result

@@ -39,6 +39,14 @@ def verify_passwords(pwd,cpwd):
 	else:
 		return ('-1','Passwords do not match')
 
+def verify_mobile(mobile):
+	#expects string
+	print "utils: verify_mobile: ", mobile
+	return (int(mobile),'Success')
+
+def verify_text(text):
+	return (text,'Success')
+
 def encrypt(strng):
 	return strng
 
