@@ -47,6 +47,18 @@ def verify_mobile(mobile):
 def verify_text(text):
 	return (text,'Success')
 
+def verify_location(latitiude,longitude):
+	try:
+		latitiude = float(latitiude)
+		longitude = float(longitude)
+	except:
+		print latitiude, longitude
+
+	if latitiude.__class__ == 12.43.__class__ and longitude.__class__ == 12.3.__class__:
+		return latitiude, longitude
+	else:
+		return 'error','error'
+
 def encrypt(strng):
 	return strng
 

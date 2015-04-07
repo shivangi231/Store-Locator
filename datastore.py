@@ -541,11 +541,11 @@ class Shops(ndb.Model):
 	def createSessionID(self,_shop):
 		#Expects real shopkeeper entity
 		time = str(datetime.datetime.now())
+		print "shop: createsessionid: creating sessionid for ", _shop.email
 		string = utils.encrypt(utils.generate_string())
 		_shop.active_sessions = _shop.active_sessions + [(string,time)]
 		_shop.put()
 		return (string,time)
-
 
 	@classmethod
 	def checkValidSession(self,_shop,_session):
@@ -570,3 +570,17 @@ class Shops(ndb.Model):
 				if utils.time_difference(session[1],str(datetime.datetime.now()),7) :
 					result = shop
 		return result
+
+	@classmethod
+	def updateLocation(self,_latitude,_longitude,_shop_key):
+		#Expects float lat and long. And expects valid key id
+		shop = Shops.get_by_id(_shop_key)
+		print "shopdb: updatelocation: found shop", shop
+
+		if shop:
+			#If no shop found, shop object is nonetype
+			shop.location = ndb.GeoPt(_latitude,_longitude)
+			shop.put()
+			return True
+
+		return False

@@ -134,17 +134,39 @@ class LocationPage(Handler):
 		_shop =  self.check_cookies(self)
 		if _shop != -1:
 			#Authenticated
-			print "location-page: found shop", shop_name
-			self.render("map.html")
+			print "location-page: found shop", _shop.shop_name
+			if _shop.location:
+				#print "location-page: trying to detect latitude", _shop.location
+				lat = _shop.location.lat
+				lon = shop.location.lon
+			else:
+				print "location-page: trying to detect latitude. None found"
+				lon = 72.629174
+				lat = 23.190373
+			self.render("map.html",lat = lat, long = lon)
 		else:
 			self.redirect("/shop/")
 	def post(self):
+
 		_lat=self.request.get('lat')
 		_log=self.request.get('long')
+		
+		#Sanitize these inputs
+		_lat,_log = utils.verify_location(_lat,_log)
+		if _lat == 'error' or _log == 'error':
+			print "locationpage-post: invalid latitude and longitude ", self.request.get('lat'), self.request.get('long')
+			return 
 
+		_shop =  self.check_cookies(self)
+		if _shop != -1:
+			#Authenticated
+			print "location-page: found shop", _shop.shop_name
+			datastore.Shops.updateLocation(_lat,_log,_shop.key.id())
+
+		
 
 application = webapp2.WSGIApplication([('/shop/',MainPage),
 									 ('/shop/register',RegistrationPage),
 									 ('/shop/profile',ProfilePage),
-									 ('/shop/getlocation',LocationPage)
+									 ('/shop/setlocation',LocationPage)
 									 ], debug=True)
