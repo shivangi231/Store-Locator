@@ -163,10 +163,15 @@ class LocationPage(Handler):
 			print "location-page: found shop", _shop.shop_name
 			datastore.Shops.updateLocation(_lat,_log,_shop.key.id())
 
+class InventoryAdditionPage(Handler):
+    def get(self):
+        self.render("add_inventory.html")        
+
 		
 
 application = webapp2.WSGIApplication([('/shop/',MainPage),
 									 ('/shop/register',RegistrationPage),
 									 ('/shop/profile',ProfilePage),
-									 ('/shop/setlocation',LocationPage)
+									 ('/shop/setlocation',LocationPage),
+									 ('/shop/addinventory',InventoryAdditionPage)
 									 ], debug=True)

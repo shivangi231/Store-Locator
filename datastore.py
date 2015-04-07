@@ -462,13 +462,22 @@ class Users(ndb.Model):
 	@classmethod
 	def add_product(self,_product,_user_key):
 		#Expects a user key here. Not just name
-		#Expects a product entity key here.
-		return True
+		#Expects a product entity key here. Will check nonetheless
+		product = Products.get_by_id(_product)
+		user = Users.get_by_id(_user_key)
+		if product and user:
+			user.shopping_list = user.shopping_list + product.key.id()
+			user.put()
+			return True
+		return False
 
 
 	@classmethod
 	def remove_product(self,_product,_user_key):
 		#Expects a user key & product key
+		if self.check_product(_product,_user_key):
+			user =  Users.get_by_id(_user_key)
+			user.shopping_list = 
 		return True
 
 	@classmethod
@@ -476,6 +485,28 @@ class Users(ndb.Model):
 		#Expects a list of product list keys
 		#Expects a user key
 		return True
+
+	@classmethod
+	def check_product(self,_product,_user):
+		user = Users.get_by_id(_user)
+		if user:
+			if _product in user.shopping_list:
+				return True
+		return False
+
+	@classmethod
+	def get_products(self,_user):
+		#Expects user key
+		#Will return a list of product entities
+		user = Users.get_by_id(_user)
+		if user:
+			products = []
+			if not user.shopping_list:
+				return products
+			
+			for k in user.shopping_list:
+				products.append(Products.get_by_id(k))
+
 
 
 #Shopkeeper

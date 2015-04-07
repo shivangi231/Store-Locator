@@ -158,97 +158,103 @@ class LogoutPage(Handler):
 
 class SearchPageProduct(Handler):
 	def get(self):
-		self.write('''<form method = "post"> <input type = "input" name = "query"> </form>''')
 
-	def post(self):
-		query = self.request.get('query')
-		#print query
-		categories = []
-		products = []
-		products_category = []
-		products_brand = []
-		brands = []
-		found_category = False		
-		found_brand = False
-		found_products = False
-		done =  False
+		query =	self.request.get('query')
+		if query:
+			if len(query) > 0:
+			
+				query = self.request.get('query')
+				#print query
+				categories = []
+				products = []
+				products_category = []
+				products_brand = []
+				brands = []
+				found_category = False		
+				found_brand = False
+				found_products = False
+				done =  False
 
-		#First try to locate category.
-		#Here i am assuming that if we have found a match for category, then we don't need to investigate on this front further. Simply return a one tuple list in the function
-		#Further, simply fetch products relevent to the category and proceed to render them.
-		categories = datastore.Categories.locate(query)
-		#print categories
-		if utils.found_match(categories):
-			found_category = True
-			print "SEARCH : found category", categories
-			categories = utils.return_match(categories)
-			products_category +=  utils.add_similarity(datastore.Products.getProductsInCategory(categories[0][0]))		#Added dummy similarity only for the sake of further operations
-			categories += datastore.Categories.getChildren(categories[0][0])
-			#Categories now have children & we also have products to show.
-
-		# Then we attempt a brand match
-		brands = datastore.Products.searchBrand(query)
-		if utils.found_match(brands):
-			found_brand = True
-			print "SEARCH : found brand!"
-			brands = utils.return_match(brands)
-			products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(brands[0][0]))						#Added dummy similarity only for the sake of further operations
-			#Now we have products of a brand to show!
-
-		#print "Reached Here"
-		#Then we proceed to find some relevent products
-		products = utils.sort(datastore.Products.searchProduct(query,_ease = 70))		
-		if utils.found_match(products):
-			#We have found some products spot on. So now simply render these products along with some products from the brand and some from the categories. (If they were spot on too!)
-			products = utils.return_upto(products,_ease = 85)
-			found_products = True
-
-		products = utils.join(products,products_brand,products_category,_distinct = True)
-		print "SEARCH: product lenght: ", len(products)
-
-		#Evaluate our current situation. 
-		if not found_brand and not found_products and not found_products:
-			#At this point, assuming we have neither products or brands or categories match or even products match!
-			#We search for categories in a relaxed manner. And we search for products. Forget brand!
-			categories = datastore.Categories.search(query,_ease = 70,_getchild = True)
-			brands =  datastore.Products.searchBrand(query,_ease = 70)
-
-			if len(categories) > 0:
-				products_category +=  utils.add_similarity(datastore.Products.getProductsInCategories(utils.remove_similarity(categories)))
-				if utils.found_match(categories,_ease = 80):
+				#First try to locate category.
+				#Here i am assuming that if we have found a match for category, then we don't need to investigate on this front further. Simply return a one tuple list in the function
+				#Further, simply fetch products relevent to the category and proceed to render them.
+				categories = datastore.Categories.locate(query)
+				#print categories
+				if utils.found_match(categories):
 					found_category = True
-			if len(brands) > 0:
-				if utils.found_match(brands,_ease = 80):
+					print "SEARCH : found category", categories
+					categories = utils.return_match(categories)
+					products_category +=  utils.add_similarity(datastore.Products.getProductsInCategory(categories[0][0]))		#Added dummy similarity only for the sake of further operations
+					categories += datastore.Categories.getChildren(categories[0][0])
+					#Categories now have children & we also have products to show.
+
+				# Then we attempt a brand match
+				brands = datastore.Products.searchBrand(query)
+				if utils.found_match(brands):
 					found_brand = True
-				products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(utils.remove_similarity(brands)))
+					print "SEARCH : found brand!"
+					brands = utils.return_match(brands)
+					products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(brands[0][0]))						#Added dummy similarity only for the sake of further operations
+					#Now we have products of a brand to show!
 
-			#We might not have any meaningful search but we have found some products.
-			products = utils.join(products,products_brand,products_category,_distinct = True)
-			if len(products) > 1:
-				#Just simply render these products and categories and be done with it.
-				done = True
+				#print "Reached Here"
+				#Then we proceed to find some relevent products
+				products = utils.sort(datastore.Products.searchProduct(query,_ease = 70))		
+				if utils.found_match(products):
+					#We have found some products spot on. So now simply render these products along with some products from the brand and some from the categories. (If they were spot on too!)
+					products = utils.return_upto(products,_ease = 85)
+					found_products = True
 
+				products = utils.join(products,products_brand,products_category,_distinct = True)
+				print "SEARCH: product lenght: ", len(products)
+
+				#Evaluate our current situation. 
+				if not found_brand and not found_products and not found_products:
+					#At this point, assuming we have neither products or brands or categories match or even products match!
+					#We search for categories in a relaxed manner. And we search for products. Forget brand!
+					categories = datastore.Categories.search(query,_ease = 70,_getchild = True)
+					brands =  datastore.Products.searchBrand(query,_ease = 70)
+
+					if len(categories) > 0:
+						products_category +=  utils.add_similarity(datastore.Products.getProductsInCategories(utils.remove_similarity(categories)))
+						if utils.found_match(categories,_ease = 80):
+							found_category = True
+					if len(brands) > 0:
+						if utils.found_match(brands,_ease = 80):
+							found_brand = True
+						products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(utils.remove_similarity(brands)))
+
+					#We might not have any meaningful search but we have found some products.
+					products = utils.join(products,products_brand,products_category,_distinct = True)
+					if len(products) > 1:
+						#Just simply render these products and categories and be done with it.
+						done = True
+
+				else:
+					done = True
+
+				####################### We are done finding products. Now second and easier part!####################
+				if done:
+					#We have two arrays to show.
+						#Products
+						#Categories
+
+					#Change! categories will always reflect the products selected!
+					categories = utils.add_similarity(datastore.Products.getCategoriesForProducts(utils.remove_similarity(products)))
+
+					#Finally render the two arrays	
+					self.render("cust_search.html",products = utils.remove_similarity(products), categories = utils.remove_similarity(categories))
+
+				else:
+					#If we are still not done, it could mean only one thing that we have not found any match whatsoever!
+					#Throw error message
+					self.write("Sorry no product found. Please go back and try again")
 		else:
-			done = True
-
-		####################### We are done finding products. Now second and easier part!####################
-		if done:
-			#We have two arrays to show.
-				#Products
-				#Categories
-
-			#We also know that the products will contain the relevant products from the categories if there were any, in the first place!
-			#But we don't know if we have enough categories to show. Or if categories match with the products required!
-			if len(categories) < 5 and not found_category:
-				categories += utils.add_similarity(datastore.Products.getCategoriesForProducts(utils.remove_similarity(products)))
-
-			#Finally render the two arrays	
-			self.render("search.html",products = utils.remove_similarity(products), categories = utils.remove_similarity(categories))
-
-		else:
-			#If we are still not done, it could mean only one thing that we have not found any match whatsoever!
-			#Throw error message
-			self.write("Sorry no product found. Please go back and try again")
+			self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+	
+	def post(self):
+		print self.request
+		
 
 class ShoppingListPage(Handler):
 	def get(self):

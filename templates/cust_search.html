@@ -1,24 +1,22 @@
-<!DOCTYPE html>
-<html>
 <head>
 <title>Store Locator: customer_search</title>
-<link href="/css/cust_search_bootstrap.css" rel='stylesheet' type='text/css' />
+<link href="/css/cust_search_bootstrap.css" rel="stylesheet" type="text/css">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/js/cust_search_jquery.min.js"></script>
 <!-- Custom Theme files -->
-<link href="/css/cust_search_style.css" rel="stylesheet" type="text/css" media="all" />
-<link href="/css/cust_search_form.css" rel="stylesheet" type="text/css" media="all" />
+<link href="/css/cust_search_style.css" rel="stylesheet" type="text/css" media="all">
+<link href="/css/cust_search_form.css" rel="stylesheet" type="text/css" media="all">
 <!-- Custom Theme files -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="keywords" content="Pakhi Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
-Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design">
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 <!--webfont-->
-<link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
+<link href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css">
 <!-- dropdown -->
 <script src="/js/cust_search_jquery.easydropdown.js"></script>
-<link href="/css/cust_search_nav.css" rel="stylesheet" type="text/css" media="all"/>
+<link href="/css/cust_search_nav.css" rel="stylesheet" type="text/css" media="all">
 <script type="text/javascript" src="js/hover_pack.js"></script>
 		  <script type="text/javascript">
 		jQuery(document).ready(function($) {
@@ -35,15 +33,15 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 		<div class="top-header">
 			<div class="container">
 			<div class="logo">
-				<a href="index.html"><img src="" alt="" /></a>
+				<a href="index.html"><img src="" alt=""></a>
 			</div>
 				<div class="header-top-right">
 				<!-- start search-->
 				    <div class="search-box">
 					    <div id="sb-search" class="sb-search">
 							<form>
-								<input class="sb-search-input" placeholder="Search your Product..." type="search" name="search" id="search">
-								<input class="sb-search-submit" type="submit" value="">
+								<input name="query" class="sb-search-input" placeholder="Search your Product..." id="search" type="search">
+								<input class="sb-search-submit" value="" type="submit">
 								<span class="sb-icon-search"> </span>
 							</form>
 						</div>
@@ -58,6 +56,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 
 					
 				</div>
+				
 			<div class="navigation">	
 			<div>
               <label class="mobile_menu" for="mobile_menu">
@@ -82,11 +81,10 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			   	
     <div class="col-xs-12 ">
           
-           <ul class="nav nav-pills" role="tablist">
-          <li class="active in"><a href="#mobile" role="tab" data-toggle="tab">mobile</a></li>
-          <li><a href="#grocery" role="tab" data-toggle="tab">grocery</a></li>
-          <li><a href="#book" role="tab" data-toggle="tab">Book</a></li>
-          <li><a href="#general" role="tab" data-toggle="tab">general store</a></li>
+           <ul class="nav nav-pills">
+           	{%for cat in categories%}
+	         <li class="active in"><a href="">{{cat.name}}</a></li>
+            {%endfor%}
 
           </ul>
     </div>
@@ -100,28 +98,33 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
   
 	<!-- content -->
 	<div class="tab-pane fade active in" id="book">
-		<div class="box1">
+
+		{%for i in range(0,products|length,3)%}
+				<div class=".col-md-12">
+					
+					{% if i < products|length %}
+					<div class=".col-md-3">
 				   <div class="col_1_of_single1 span_1_of_single1">
 				     <div class="view1 view-fifth1">
 				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
+					  	<h3 class="m_1">{{products[i].name}}</h3>
 					  	<p class="m_2">Category</p>
 						<a href="single.html">
 				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""/></div>
+						   <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""></div>
 					          <div class="mask1">
 	                       		<div class="info">Quick View</div>
 			                  </div>
 	                    </div>
                        <div class="price">price</div>
-					   </div>
-					    </div></a>
+					   </a></div><a href="single.html">
+					    </a></div>
 						<div class="rtng">
 					    <form action="" class="sky-form">
 						     <fieldset>					
 							   <section>
 							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
+									<label class="checkbox"><input name="checkbox" type="checkbox"><i></i>select</label>
 								 </div>
 							  </section>
 						    </fieldset>
@@ -130,317 +133,83 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 
 			    	    <div class="clear"></div>
 			    	</div>
-				    <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-3.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						 
-			    	    <div class="clear"></div>
-			    	</div>
+				    </div>
+				    {% endif %}
+				    {% if i+1 < products|length %}
+				    <div class=".col-md-3">
 				   <div class="col_1_of_single1 span_1_of_single1">
 				     <div class="view1 view-fifth1">
 				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
+					  	<h3 class="m_1">{{products[i+1].name}}</h3>
 					  	<p class="m_2">Category</p>
 						<a href="single.html">
 				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-9.jpg" alt=""/></div>
+						   <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""></div>
 					          <div class="mask1">
 	                       		<div class="info">Quick View</div>
 			                  </div>
 	                    </div>
                        <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
+					   </a></div><a href="single.html">
+					    </a></div>
+						<div class="rtng">
 					    <form action="" class="sky-form">
 						     <fieldset>					
 							   <section>
 							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
+									<label class="checkbox"><input name="checkbox" type="checkbox"><i></i>select</label>
 								 </div>
 							  </section>
 						    </fieldset>
 						  </form>
 						  </div>
-						 
-			    	    <div class="clearfix"></div>
+
+			    	    <div class="clear"></div>
 			    	</div>
+				    </div>
+				    {% endif %}
+				    {% if i+2 < products|length%}
+				    	<div class=".col-md-3">
+				   <div class="col_1_of_single1 span_1_of_single1">
+				     <div class="view1 view-fifth1">
+				  	  <div class="top_box">
+					  	<h3 class="m_1">{{products[i+2].name}}</h3>
+					  	<p class="m_2">Category</p>
+						<a href="single.html">
+				         <div class="grid_img">
+						   <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""></div>
+					          <div class="mask1">
+	                       		<div class="info">Quick View</div>
+			                  </div>
+	                    </div>
+                       <div class="price">price</div>
+					   </a></div><a href="single.html">
+					    </a></div>
+						<div class="rtng">
+					    <form action="" class="sky-form">
+						     <fieldset>					
+							   <section>
+							     <div class="rating">
+									<label class="checkbox"><input name="checkbox" type="checkbox"><i></i>select</label>
+								 </div>
+							  </section>
+						    </fieldset>
+						  </form>
+						  </div>
+
+			    	    <div class="clear"></div>
+			    	</div>
+				    </div>
+				    {% endif %}
 				  <div class="clearfix"></div>
-			  </div>
+			 </div>
+			  {%endfor%}
 	</div>
 	
-	<div class="tab-pane fade active in" id="grocery">
-			<div class="box1">
-				   <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-1.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-						<div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
 
-			    	    <div class="clear"></div>
-			    	</div>
-				    <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-2.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						 
-			    	    <div class="clear"></div>
-			    	</div>
-				   <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-4.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						 
-			    	    <div class="clearfix"></div>
-			    	</div>
-				  <div class="clearfix"></div>
-			  </div>
-	</div>
 	
-	<div class="tab-pane fade active in" id="mobile">
-			<div class="box1">
-				   <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-6.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-						<div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						 
-			    	    <div class="clear"></div>
-			    	</div>
-				    <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-7.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						 
-			    	    <div class="clear"></div>
-			    	</div>
-				   <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-8.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						
-			    	    <div class="clearfix"></div>
-			    	</div>
-				  <div class="clearfix"></div>
-			  </div>
-	</div>
 
-	<div class="tab-pane fade active in" id="general">
-		<div class="box1">
-				   <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-10.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-						<div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						 
-			    	    <div class="clear"></div>
-			    	</div>
-				 <div class="col_1_of_single1 span_1_of_single1">
-				     <div class="view1 view-fifth1">
-				  	  <div class="top_box">
-					  	<h3 class="m_1">Name of the product</h3>
-					  	<p class="m_2">Category</p>
-						<a href="single.html">
-				         <div class="grid_img">
-						   <div class="css3"><img src="/images/cust_search_images/pic-11.jpg" alt=""/></div>
-					          <div class="mask1">
-	                       		<div class="info">Quick View</div>
-			                  </div>
-	                    </div>
-                       <div class="price">price</div>
-					   </div>
-					    </div></a>
-					   <div class="rtng">
-					    <form action="" class="sky-form">
-						     <fieldset>					
-							   <section>
-							     <div class="rating">
-									<label class="checkbox"><input type="checkbox" name="checkbox"><i></i>select</label>
-								 </div>
-							  </section>
-						    </fieldset>
-						  </form>
-						  </div>
-						
-			    	    <div class="clearfix"></div>
-			    	</div>
-				  <div class="clearfix"></div>
-			  </div>
-    </div>
+	
 	<!-- content -->
 	
 
@@ -456,19 +225,19 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 
 		<div class="footer">
 		<div class="up-arrow">
-			<a class="scroll" href="#home"><img src="/images/cust_search_images/up.png" alt="" /></a>
+			<a class="scroll" href="#home"><img src="/images/cust_search_images/up.png" alt=""></a>
 		</div>
 			<div class="container">
 				<div class="copyrights">
-					<p>by Team 23</a></p>
+					<p>by Team 23</p>
 				</div>
 				  <div class="clearfix"></div>
 			</div>
 		</div>
+
+
+
+
+
+
 </body>
-</html>
-
-
-
-
-
