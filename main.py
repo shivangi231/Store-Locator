@@ -253,8 +253,26 @@ class SearchPageProduct(Handler):
 			self.render("cust_search.html", categories =  datastore.Categories.getRoots())
 	
 	def post(self):
-		print self.request
+		length = self.request.get('length')
+		print "search-post: ", self.request
 		
+		#Sanitizing Length
+		try:
+			length = int(length)
+		except:
+			print "search-post: length is not a number", length
+		print "search-post: length -", length
+
+		if length.__class__ == int('1').__class__ :
+			products = []
+			for i in range(length):
+				key = self.request.get('%s' % i)
+				if key:
+					products.append(key)
+			print products
+		
+		#DONE.
+		#Now initiate a shop search based on these values.
 
 class ShoppingListPage(Handler):
 	def get(self):
