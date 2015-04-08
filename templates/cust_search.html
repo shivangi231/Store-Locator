@@ -84,7 +84,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
            <ul class="nav nav-pills">
            	{%for cat in categories%}
 	         <li class="active in"><a href="">{{cat.name}}</a></li>
-            {%endfor%}
+          		{%endfor%}
 
           </ul>
     </div>
@@ -98,7 +98,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
   
 	<!-- content -->
 	<div class="tab-pane fade active in" id="book">
-
+		<form method="POST" >
 		{%for i in range(0,products|length,3)%}
 				<div class=".col-md-12">
 					
@@ -120,15 +120,15 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 					   </a></div><a href="single.html">
 					    </a></div>
 						<div class="rtng">
-					    <form action="" class="sky-form">
+					   
 						     <fieldset>					
 							   <section>
 							     <div class="rating">
-									<label class="checkbox"><input name="checkbox" type="checkbox"><i></i>select</label>
+									<label class="checkbox"><input name="{{i}}" value={{products[i].key.id()}} type="checkbox"><i></i>select</label>
 								 </div>
 							  </section>
 						    </fieldset>
-						  </form>
+						  
 						  </div>
 
 			    	    <div class="clear"></div>
@@ -153,16 +153,15 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 					   </a></div><a href="single.html">
 					    </a></div>
 						<div class="rtng">
-					    <form action="" class="sky-form">
+					    
 						     <fieldset>					
 							   <section>
 							     <div class="rating">
-									<label class="checkbox"><input name="checkbox" type="checkbox"><i></i>select</label>
+									<label class="checkbox"><input name="{{i+1}}" value={{products[i+1].key.id()}} type="checkbox"><i></i>select</label>
 								 </div>
 							  </section>
 						    </fieldset>
-						  </form>
-						  </div>
+						  						  </div>
 
 			    	    <div class="clear"></div>
 			    	</div>
@@ -186,15 +185,15 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 					   </a></div><a href="single.html">
 					    </a></div>
 						<div class="rtng">
-					    <form action="" class="sky-form">
+					    
 						     <fieldset>					
 							   <section>
 							     <div class="rating">
-									<label class="checkbox"><input name="checkbox" type="checkbox"><i></i>select</label>
+									<label class="checkbox"><input name="{{i+2}}" value={{products[i+2].key.id()}} type="checkbox"><i></i>select</label>
 								 </div>
 							  </section>
 						    </fieldset>
-						  </form>
+						  
 						  </div>
 
 			    	    <div class="clear"></div>
@@ -204,6 +203,9 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				  <div class="clearfix"></div>
 			 </div>
 			  {%endfor%}
+			  <input type="hidden" value = {{products|length}} name = "length">
+			  <input type="Submit">
+			</form>  
 	</div>
 	
 
@@ -213,13 +215,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	<!-- content -->
 	
 
-   <!--<div class="clearfix"></div>-->
- </div>
-       <form method="POST">
-		       <button type="button" class="btn btn-info btn-lg"><a href="/getele/">Submit
-		       </a></button> 
-	   </form>	       
-</div>
+ 
 	<!-- content-section-ends -->
 
 

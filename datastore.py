@@ -176,6 +176,15 @@ class Products(ndb.Model):
 			entity = Products(name = _name, brand = _brand, category = _category)
 			entity.put()
 
+
+	@classmethod
+	def fetch_by_id(self,product_key):
+		query = Products.query().fetch()
+		for q in query:
+			if str(q.key.id()) == product_key:
+				return q
+		return None
+
 	@classmethod
 	def searchProduct(self,_name,_ease = 70):
 		#just find products equal or similar to this
@@ -224,7 +233,6 @@ class Products(ndb.Model):
 		else:
 			return
 		
-
 		if not Categories.isLeaf(_category.key):
 			return self.searchProductInCategories(_name, Categories.getLeafs(_category.key))
 
@@ -463,11 +471,18 @@ class Users(ndb.Model):
 	def add_product(self,_product,_user_key):
 		#Expects a user key here. Not just name
 		#Expects a product entity key here. Will check nonetheless
-		product = Products.get_by_id(_product)
+		print "userdb: add_product: ",_product, _user_key
+		product = Products.fetch_by_id(_product)
 		user = Users.get_by_id(_user_key)
-		if product and user:
-			user.shopping_list = user.shopping_list + product.key.id()
+		print "userdb: add_product checking entries", product, user
+		if product and user:	
+			if product.key in user.shopping_list:
+				print "userdb: add_product duplicate entry", product.key, user.shopping_list
+				return False
+			user.shopping_list = user.shopping_list + [product.key]
 			user.put()
+			#print "shopdb: add_product: user", user
+			#print "shopdb: add_product: product", str(product.key.id)
 			return True
 		return False
 
@@ -476,14 +491,9 @@ class Users(ndb.Model):
 	def remove_product(self,_product,_user_key):
 		#Expects a user key & product key
 		if self.check_product(_product,_user_key):
+			print "user"
 			user =  Users.get_by_id(_user_key)
-			user.shopping_list = 
-		return True
-
-	@classmethod
-	def add_products(self,_product_list,_user_key):
-		#Expects a list of product list keys
-		#Expects a user key
+			user.shopping_list.remove()
 		return True
 
 	@classmethod
