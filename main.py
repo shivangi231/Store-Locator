@@ -527,7 +527,7 @@ class PasswordChange(Handler):
 			_cnew_pass = self.request.get('cnwpwd')
 
 			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
-			datastore.Users.update_pass(_old_pass,_new_pass,user)
+			datastore.Users.update_pass(_old_pass,_new_pass,_user)
 			self.redirect("/profileinfo?msg=Password_successfully_changed")
 		else:
 			self.redirect("/")

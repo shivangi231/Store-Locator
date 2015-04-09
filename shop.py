@@ -219,6 +219,31 @@ class ProfilePage(Handler):
 			print "profile-get: no shop found in cookies"
 			self.redirect("/shop/")
 
+class Infopage(Handler):
+    def get(self):
+    	_shop = self.check_cookies(self)
+    	if _shop != -1:
+			print "profile-get: found shop", _shop
+			self.render("shop_info.html" ,fname=_shop.fname,lname=_shop.lname,email=_shop.email,mobile=_shop.mobile,add=_shop.shop_address,_shopname=_shop.shop_name)
+		else:
+			self.redirect("/shop/")
+
+	def post(self):
+		_shop = self.check_cookies(self)
+		if _shop != -1:
+			_fname=utils.verify_name(self.request.get('fname'))[0]
+			_lname=utils.verify_name(self.request.get('lname'))[0]
+			_email=utils.verify_email(self.request.get('email'))[0]
+			_mobile=utils.verify_mobile(self.request.get('mobile'))[0]
+			_shop_name=utils.verify_name(self.request.get('shop_name'))[0]
+			_shop_address=utils.verify_name(self.request.get('shop_add'))[0]
+
+			datastore.Shops.update_info(_fname, _lname, _email, _mobile, _shop_name, _shop_address, _shop)
+			self.redirect("/shop/profile")
+
+
+
+
 class LocationPage(Handler):
 	def get(self):
 		_shop =  self.check_cookies(self)
@@ -364,7 +389,29 @@ class InventoryManagementPage(Handler):
 						datastore.Shops.remove_product(key,_shop.key.id())
 				print "inventorymanagement: post: products: ", products
 			self.redirect("/shop/inventory")
+		else:
+			self.redirect("/shop/")
 
+class PasswordChange(Handler):
+	def get(self):
+		_shop = self.check_cookies(self)
+		if _shop != -1:
+			self.render("update_pass.html")
+		else:
+			self.redirect("/shop")
+
+	def post(self):
+		_shop = self.check_cookies(self)
+		if _shop != -1:
+			_old_pass = self.request.get('crpwd')
+			_new_pass = self.request.get('nwpwd')
+			_cnew_pass = self.request.get('cnwpwd')
+
+			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
+			datastore.Shops.update_pass(_old_pass,_new_pass,_shop)
+			self.redirect("/shop/profile?msg=Password_successfully_changed")
+		else:
+			self.redirect("/shop/")
 
 application = webapp2.WSGIApplication([('/shop/',MainPage),
 									 ('/shop/register',RegistrationPage),

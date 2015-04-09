@@ -448,7 +448,7 @@ class Users(ndb.Model):
 			print "userdb: changing password: ", _user, _nwpwd
 			_user.password = _nwpwd
 			_user.put()
-	
+
 		@classmethod
 	def checkValidSession(self,_user,_session):
 		#First check for the user
@@ -625,6 +625,36 @@ class Shops(ndb.Model):
 		else:
 			print "User already exists"
 			return (-1,'This shop already exists')
+
+	@classmethod
+	def update_info(self,_fname, _lname, _email, _mobile, _shop_name, _shop_address, _shop):
+		#Expects html escaped variables and valid user
+		if not _shop:
+			return
+
+		if _fname != -1:
+			_shop.fname = _fname
+		if _lname != -1:
+			_shop.lname = _lname
+		if _email != -1:
+			_shop.email = _email
+		if _mobile != -1:
+			_shop.mobile = _mobile
+		if _shop_name != -1
+			_shop.shop_name = _shop_name
+		if _shop_address != -1:
+			_shop.shop_address = _shop_address
+
+		_shop.put()
+		return
+
+	@classmethod
+	def update_password(self,_pwd,_nwpwd,_shop):
+		if _shop.password == _pwd:
+			print "shopdb: changing password: ", _shop, _nwpwd
+			_shop.password = _nwpwd
+			_shop.put()
+
 
 	@classmethod
 	def shopExists(self,_shop_name,_email,_need_user = False):
