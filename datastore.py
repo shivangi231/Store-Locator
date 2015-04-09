@@ -527,7 +527,6 @@ class Users(ndb.Model):
 			return True
 		return False
 
-
 	@classmethod
 	def remove_product(self,_product,_user_key):
 		#Expects a user key & product key
@@ -577,6 +576,8 @@ class Shops(ndb.Model):
 	shop_name = ndb.StringProperty()
 	shop_address = ndb.StringProperty()
 	location = ndb.GeoPtProperty()
+	inventory =  ndb.KeyProperty(kind = Products, repeated = True)
+	inventory_archived =  ndb.KeyProperty(kind = Products, repeated = True)
 	active_sessions = ndb.PickleProperty(repeated = True)
 
 	#Register function
@@ -673,3 +674,59 @@ class Shops(ndb.Model):
 			return True
 
 		return False
+
+	@classmethod
+	def add_product(self,_product,_shop_key):
+		#Expects a user key here. Not just name
+		#Expects a product entity key here. Will check nonetheless
+		print "shopdb: add_product: ",_product, _shop_key
+		product = Products.fetch_by_id(_product)
+		shop = Shops.get_by_id(_shop_key)
+		print "shopdb: add_product checking entries", product, shop
+		if product and shop:	
+			if product.key in shop.inventory:
+				print "shopdb: add_product duplicate entry", product.key, shop.inventory
+				return False
+			shop.inventory = shop.inventory + [product.key]
+			shop.put()
+			#print "shopdb: add_product: user", user
+			#print "shopdb: add_product: product", str(product.key.id)
+			return True
+		return False
+
+	@classmethod
+	def remove_product(self,_product,_shop_key):
+		#Expects a user key & product key
+		print "shopdb: remove_product: ", _product,_shop_key
+		if self.check_product(_product,_shop_key,might_as_well_remove_it = True):
+			print "shopdb: remove_product: FOUND", _product,_shop_key
+			return True
+		return False
+
+	@classmethod
+	def check_product(self,_product,_shop,might_as_well_remove_it = False):
+		shop = Shops.get_by_id(_shop)
+		if shop:
+			print "shopdb: check_product: Finding product in list", _product,shop.inventory
+			for key in shop.inventory:
+				if str(key.id()) == _product:
+					print "shopdb: check_product: product found"
+					if might_as_well_remove_it:
+						shop.inventory.remove(key)
+						shop.inventory_archived.append(key)
+						shop.put()
+					return True
+		return False
+
+	@classmethod
+	def get_products(self,_shop):
+		#Expects user key
+		#Will return a list of product entities
+		shop = Shops.get_by_id(_shop)
+		if shop:
+			products = []
+			if not shop.inventory:
+				return products
+			
+			for k in shop.inventory:
+				products.append(Products.get_by_id(k))
