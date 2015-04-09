@@ -180,8 +180,10 @@ class Products(ndb.Model):
 	@classmethod
 	def fetch_by_id(self,product_key):
 		query = Products.query().fetch()
+		#print "productsdb: fetch_by_id: ", product_key
 		for q in query:
-			if str(q.key.id()) == product_key:
+			if str(q.key.id()) == str(product_key):
+				print "productsdb: fetch_by_id: foundproduct", q
 				return q
 		return None
 
@@ -430,17 +432,17 @@ class Users(ndb.Model):
 				_user = q
 				session = self.createSessionID(q)
 
-		print "LOGIN FOUND USER: ",_user
+		print "userdb: login: found user: ",_user
 
 		if not _user == -1:
 			return (session[0],_user)
 		else:
-			print "Users-login UNSUCCESSFUL"
+			print "userdb: login: UNSUCCESSFUL"
 			return (-1,-1)
 
 	@classmethod
 	def logout(self,_user,_session):
-		print "Checking for user based on userid", _user
+		print "userdb: logout: Checking for user based on userid", _user
 		users = Users.query()
 		user = None
 		for u in users:
@@ -490,18 +492,24 @@ class Users(ndb.Model):
 	@classmethod
 	def remove_product(self,_product,_user_key):
 		#Expects a user key & product key
-		if self.check_product(_product,_user_key):
-			print "user"
-			user =  Users.get_by_id(_user_key)
-			user.shopping_list.remove()
-		return True
+		print "userdb: remove_product: ", _product,_user_key
+		if self.check_product(_product,_user_key,might_as_well_remove_it = True):
+			print "userdb: remove_product: FOUND", _product,_user_key
+			return True
+		return False
 
 	@classmethod
-	def check_product(self,_product,_user):
+	def check_product(self,_product,_user,might_as_well_remove_it = False):
 		user = Users.get_by_id(_user)
 		if user:
-			if _product in user.shopping_list:
-				return True
+			print "userdb: check_product: Finding product in list", _product,user.shopping_list
+			for key in user.shopping_list:
+				if str(key.id()) == _product:
+					print "userdb: check_product: product found"
+					if might_as_well_remove_it:
+						user.shopping_list.remove(key)
+						user.put()
+					return True
 		return False
 
 	@classmethod

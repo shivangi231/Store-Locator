@@ -184,7 +184,7 @@ class SearchPageProduct(Handler):
 					#print categories
 					if utils.found_match(categories):
 						found_category = True
-						print "SEARCH : found category", categories
+						print "search: get : found category", categories
 						categories = utils.return_match(categories)
 						products_category +=  utils.add_similarity(datastore.Products.getProductsInCategory(categories[0][0]))		#Added dummy similarity only for the sake of further operations
 						categories += datastore.Categories.getChildren(categories[0][0])
@@ -194,21 +194,22 @@ class SearchPageProduct(Handler):
 					brands = datastore.Products.searchBrand(query)
 					if utils.found_match(brands):
 						found_brand = True
-						print "SEARCH : found brand!"
+						print "search: get : found brand!"
 						brands = utils.return_match(brands)
-						products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(brands[0][0]))						#Added dummy similarity only for the sake of further operations
+						products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(brands[0][0]))				#Added dummy similarity only for the sake of further operations
 						#Now we have products of a brand to show!
 
 					#print "Reached Here"
 					#Then we proceed to find some relevent products
 					products = utils.sort(datastore.Products.searchProduct(query,_ease = 70))		
 					if utils.found_match(products):
-						#We have found some products spot on. So now simply render these products along with some products from the brand and some from the categories. (If they were spot on too!)
+						#We have found some products spot on. So now simply render these products 
+						#along with some products from the brand and some from the categories. (If they were spot on too!)
 						products = utils.return_upto(products,_ease = 85)
 						found_products = True
 
 					products = utils.join(products,products_brand,products_category,_distinct = True)
-					print "SEARCH: product lenght: ", len(products)
+					print "search: get: product lenght: ", len(products)
 
 					#Evaluate our current situation. 
 					if not found_brand and not found_products and not found_products:
@@ -236,6 +237,7 @@ class SearchPageProduct(Handler):
 						done = True
 
 					####################### We are done finding products. Now second and easier part!####################
+
 					if done:
 						#We have two arrays to show.
 							#Products
@@ -250,7 +252,7 @@ class SearchPageProduct(Handler):
 					else:
 						#If we are still not done, it could mean only one thing that we have not found any match whatsoever!
 						#Throw error message
-						self.write("Sorry no product found. Please go back and try again")
+						self.write("search: get: Sorry no product found. Please go back and try again")
 			else:
 				self.render("cust_search.html", categories =  datastore.Categories.getRoots())
 
@@ -263,13 +265,13 @@ class SearchPageProduct(Handler):
 		if _user != -1:
 			#User exists and cookie is correct.
 			length = self.request.get('length')
-			print "search-post: ", self.request			
+			print "search :post: ", self.request			
 			
 			#Sanitizing Length
 			try:
 				length = int(length)
 			except:
-				print "search-post: length is not a number", length
+				print "search :post: length is not a number", length
 			print "search-post: length -", length
 
 			if length.__class__ == int('1').__class__ :
@@ -280,37 +282,11 @@ class SearchPageProduct(Handler):
 					key = self.request.get('%s' % i)
 					if key:
 						products.append(key)
-						print "shop-post: finding product ids: ", key
+						print "search-post: finding product ids: ", key
 				print "search-post: products: ", products
 			
-			#DONE.
-			#Now initiate a shop search based on these values.
 
 
-			#Firstly we want all the shops with three things
-				#Shop entity
-				#Shop product match
-				#Shop distance from user
-
-			#TODO
-				#how to get users location
-				#how to calculate navigable distance between two place
-
-			#Now think of what could be a measure of distance vs product match.
-
-
-
-class ShoppingListPage(Handler):
-	def get(self):
-		#Authenticate the user based on cookies. See get of mainpage on how to do so.
-
-		return True
-		#Fetch user's shopping list
-
-
-
-		#Render the shopping list page. by simply sending the required data to frontend through self.render
-			#See how i rendered data in search page
 
 class ShoppingListAdd(Handler):
 	def get(self):
@@ -341,7 +317,7 @@ class ShoppingListAdd(Handler):
 					#print categories
 					if utils.found_match(categories):
 						found_category = True
-						print "SEARCH : found category", categories
+						print "add-shopping: get : found category", categories
 						categories = utils.return_match(categories)
 						products_category +=  utils.add_similarity(datastore.Products.getProductsInCategory(categories[0][0]))		#Added dummy similarity only for the sake of further operations
 						categories += datastore.Categories.getChildren(categories[0][0])
@@ -351,7 +327,7 @@ class ShoppingListAdd(Handler):
 					brands = datastore.Products.searchBrand(query)
 					if utils.found_match(brands):
 						found_brand = True
-						print "SEARCH : found brand!"
+						print "add-shopping: get : found brand!"
 						brands = utils.return_match(brands)
 						products_brand += utils.add_similarity(datastore.Products.getProductsInBrands(brands[0][0]))						#Added dummy similarity only for the sake of further operations
 						#Now we have products of a brand to show!
@@ -365,7 +341,7 @@ class ShoppingListAdd(Handler):
 						found_products = True
 
 					products = utils.join(products,products_brand,products_category,_distinct = True)
-					print "SEARCH: product lenght: ", len(products)
+					print "add-shopping: get: product lenght: ", len(products)
 
 					#Evaluate our current situation. 
 					if not found_brand and not found_products and not found_products:
@@ -407,7 +383,7 @@ class ShoppingListAdd(Handler):
 					else:
 						#If we are still not done, it could mean only one thing that we have not found any match whatsoever!
 						#Throw error message
-						self.write("Sorry no product found. Please go back and try again")
+						self.write("add-shopping: get: Sorry no product found. Please go back and try again")
 			else:
 				self.render("cust_search.html", categories =  datastore.Categories.getRoots())
 		else:
@@ -420,14 +396,14 @@ class ShoppingListAdd(Handler):
 		if _user != -1:
 			#User exists and cookie is correct.
 			length = self.request.get('length')
-			print "search-post: ", self.request			
+			print "add-shopping: post: ", self.request			
 			
 			#Sanitizing Length
 			try:
 				length = int(length)
 			except:
-				print "search-post: length is not a number", length
-			print "search-post: length -", length
+				print "add-shopping: post: length is not a number", length
+			print "sadd-shopping: post: length -", length
 
 			if length.__class__ == int('1').__class__ :
 				#Surely length is a valid length and we have products list and a valid user. 
@@ -437,33 +413,62 @@ class ShoppingListAdd(Handler):
 					key = self.request.get('%s' % i)
 					if key:
 						products.append(key)
-						print "shop-post: finding product ids: ", key
+						print "add-shopping: post: finding product ids: ", key
 						datastore.Users.add_product(key,_user.key.id())
-				print "search-post: products: ", products
-			
-			#DONE.
-			#Now initiate a shop search based on these values.
+				print "add-shopping: post: products: ", products
+				self.redirect("/shoppinglist")
+		else:
+			self.redirect("/")
 
-
-			#Firstly we want all the shops with three things
-				#Shop entity
-				#Shop product match
-				#Shop distance from user
-
-			#TODO
-				#how to get users location
-				#how to calculate navigable distance between two place
-
-			#Now think of what could be a measure of distance vs product match.
 
 	
 
 class ShoppingListManage(Handler):
 	def get(self):
 		#Authenticate the user based on cookies. See get of mainpage on how to do so.
+		_user = self.check_cookies(self)
+		if _user != -1:
+			#User exists and cookie is correct.
+			products = []
+			for product in _user.shopping_list:
+				products.append(datastore.Products.fetch_by_id(product.id()))
+				print products
+			self.render("shopping-list.html", user = _user.fname, products = products)
+		else:
+			#self.response.headers.add_header('Set-cookie','user =  guest')
+			print "shoppinglist_manage: get: No cookies found. Redirecting"
+			self.redirect("/")
 
-		return True
-	
+	def post(self):
+		#Expect a list of products to delete
+		_user = self.check_cookies(self)
+		if _user != -1:
+			#User exists and cookie is correct.
+			length = self.request.get('length')
+			print "shopping_list :post: ", self.request			
+			
+			#Sanitizing Length
+			try:
+				length = int(length)
+			except:
+				print "shopping_list :post: length is not a number", length
+			print "shopping_list-post: length -", length
+
+			if length.__class__ == int('1').__class__ :
+				#Surely length is a valid length and we have products list and a valid user. 
+				#It doesnt
+				products = []
+				for i in range(length):
+					key = self.request.get('%s' % i)
+					if key:
+						#Here for sure i have one by one product key. May or may not be geniuine.
+						print "shopping_list-post: finding product ids: ", key
+						products.append(key)
+						datastore.Users.remove_product(key,_user.key.id())
+				print "shopping_list-post: products: ", products
+			self.redirect("/shoppinglist")
+
+
 
 
 application = webapp2.WSGIApplication([
@@ -476,8 +481,7 @@ application = webapp2.WSGIApplication([
 									('/loggedin',WelcomePage),
 									('/logout',LogoutPage),
 									('/search',SearchPageProduct),
-									('/shoppinglist',ShoppingListPage),
 									('/addshoppinglist',ShoppingListAdd),
-									('/removeshoppinglist',ShoppingListRemove)
+									('/shoppinglist',ShoppingListManage)
 									], debug=True)
 

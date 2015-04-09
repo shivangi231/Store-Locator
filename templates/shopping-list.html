@@ -1,0 +1,9 @@
+<h1> {{user}} </h1>
+
+<form method = "post">
+{%for i in range(products|length) %}
+<label> <input type="checkbox" value="{{products[i].key.id()}}" name={{i}}> {{products[i].name}} </label><br>
+{% endfor %}
+<input type="hidden" value = {{products|length}} name = "length">
+<input type="submit">
+</form>
