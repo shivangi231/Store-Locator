@@ -25,6 +25,19 @@ class Categories(ndb.Model):
 			entity.put()
 
 	@classmethod
+	def fetch_by_id(self,category_id,get_children = False):
+		query = Categories.query().fetch()
+		results = []
+		#print "productsdb: fetch_by_id: ", product_key
+		for q in query:
+			if str(q.key.id()) == str(category_id):
+				results.append(q)
+		if get_children:
+			results += self.getChildren(results[0])
+
+		return results
+
+	@classmethod
 	def isLeaf(self,_category_key):
 		category = _category_key.get()
 		if len(category.children) > 0:
@@ -358,6 +371,27 @@ class Products(ndb.Model):
 			distinct_categories.append(keys.get())
 		return distinct_categories
 
+	@classmethod
+	def filterProductInCategory(self,product_list,category):
+		#Expects a list of valid product and a category id.
+		result = []
+		for p in product_list:
+			print "productdb: filter: ",p.category, category.key
+			if p.category == category.key:
+				result.append(p)
+		return result
+
+	@classmethod
+	def filterProductInCategories(self,product_list,categories):
+		result = []
+		for c in categories:
+			a = utils.add_similarity(self.filterProductInCategory(product_list,c))
+			print a
+			b = utils.add_similarity(result)
+			result = utils.remove_similarity(utils.join(a,b,_distinct = True))
+		return result
+
+
 
 #Setup Users DB. and its methods acting as wrappers
 class Users(ndb.Model):
@@ -508,6 +542,7 @@ class Users(ndb.Model):
 					print "userdb: check_product: product found"
 					if might_as_well_remove_it:
 						user.shopping_list.remove(key)
+						user.shopping_list_archived.append(key)
 						user.put()
 					return True
 		return False

@@ -83,12 +83,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
           
            <ul class="nav nav-pills">
            	{%for cat in categories%}
-	         <li class="active in"><a href="">{{cat.name}}</a></li>
+	         <li class="active in"><a href="?category={{cat.key.id()}}&query={{query}}">{{cat.name}}</a></li>
           		{%endfor%}
 
           </ul>
     </div>
-				
+			
+	<h3> {{error}} </h3>	
     <div class="clearfix"></div>
 	</div>
 	</div>

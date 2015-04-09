@@ -98,7 +98,7 @@ def find_in_tuple_list(_tuple,_list):
 			return True
 	return False
 
-def join(_list1,_list2,_list3,_distinct = False):
+def join(_list1 = [],_list2 = [],_list3 = [],_distinct = False):
 	if not _list1:
 		_list1 = []
 	if not _list2:
