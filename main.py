@@ -25,6 +25,9 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_user = handler.request.cookies.get('user')
 		_session = handler.request.cookies.get('session')
+		self.response.delete_cookie('shop')
+		self.response.delete_cookie('session_shop')
+
 		if logout:
 			_user = datastore.Users.logout(_user,_session)
 			self.response.headers.add_header('Set-cookie','user = %s'%str(""))
@@ -237,7 +240,7 @@ class WelcomePage(Handler):
 	def get(self):
 		_user = self.check_cookies(self)
 		if _user != -1:
-			self.write(_user.fname)
+			self.write(_user)
 
 class LogoutPage(Handler):
 	def get(self):
@@ -316,18 +319,20 @@ class SearchPageProduct(Handler):
 				for i in range(length):
 					key = self.request.get('%s' % i)
 					if key:
-						products.append(key)
+						products.append(str(key))
 						print "search-post: finding product ids: ", key
 				print "search-post: products: ", products
 
-				#I have products that the user wants to buy
-				#I need the shops now.
+				
+				#if len(products) > 0:
+					#I have products that the user wants to buy - products
+					#I need the shops now.
+
 
 				#paresh - give a distance matrix
 				#nikhil - based on a list of shops, show them on google maps
 				#based on % of product in inventory, and distance from user, give a list of shops to nikhil
 		
-
 class ShoppingListAdd(Handler):
 	def get(self):
 		#Search for product here!
@@ -408,9 +413,6 @@ class ShoppingListAdd(Handler):
 		else:
 			self.redirect("/")
 
-
-	
-
 class ShoppingListManage(Handler):
 	def get(self):
 		#Authenticate the user based on cookies. See get of mainpage on how to do so.
@@ -456,6 +458,80 @@ class ShoppingListManage(Handler):
 				print "shopping_list-post: products: ", products
 			self.redirect("/shoppinglist")
 
+class LocationPage(Handler):
+	def get(self):
+		_user =  self.check_cookies(self)
+		if _user != -1:
+			if _user.location:
+				#print "location-page: trying to detect latitude", _shop.location
+				lat = _user.location.lat
+				lon = _user.location.lon
+			else:
+				print "location-page: trying to detect latitude. None found"
+				lon = 72.629174
+				lat = 23.190373
+			self.render("customer_map.html",lat = lat, long = lon)
+		else:
+			self.redirect("/")
+
+	def post(self):
+
+		_lat=self.request.get('lat')
+		_log=self.request.get('long')
+		
+		#Sanitize these inputs
+		_lat,_log = utils.verify_location(_lat,_log)
+		if _lat == 'error' or _log == 'error':
+			print "locationpage-post: invalid latitude and longitude ", self.request.get('lat'), self.request.get('long')
+			return 
+
+		_user =  self.check_cookies(self)
+		if _user != -1:
+			#Authenticated
+			print "location-page: found shop", _user.fname
+			datastore.Users.updateLocation(_lat,_log,_user)
+			self.redirect("/loggedin")
+
+class ProfilePage(Handler):
+	def get(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			self.render("customer_info.html" ,fname=_user.fname,lname=_user.lname,email=_user.email)
+		else:
+			self.redirect("/")
+
+	def post(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			_fname=utils.verify_name(self.request.get('fname'))[0]
+			_lname=utils.verify_name(self.request.get('lname'))[0]
+			_email=utils.verify_email(self.request.get('email'))[0]
+			datastore.Users.update_info(_fname,_lname,_email)
+			self.redirect("/profileinfo")
+		else:
+			self.redirect("/")
+
+class PasswordChange(Handler):
+	def get(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			self.render("update_pass.html")
+		else:
+			self.redirect("/")
+
+	def post(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			_old_pass = self.request.get('crpwd')
+			_new_pass = self.request.get('nwpwd')
+			_cnew_pass = self.request.get('cnwpwd')
+
+			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
+			datastore.Users.update_pass(_old_pass,_new_pass,user)
+			self.redirect("/profileinfo?msg=Password_successfully_changed")
+		else:
+			self.redirect("/")
+
 
 
 
@@ -470,6 +546,9 @@ application = webapp2.WSGIApplication([
 									('/logout',LogoutPage),
 									('/search',SearchPageProduct),
 									('/addshoppinglist',ShoppingListAdd),
-									('/shoppinglist',ShoppingListManage)
+									('/shoppinglist',ShoppingListManage),
+									('/updatelocation',LocationPage),
+									('/profileinfo',ProfilePage),
+									('/updatepwd',PasswordChange)
 									], debug=True)
 

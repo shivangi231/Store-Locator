@@ -407,6 +407,8 @@ class Users(ndb.Model):
 	active_sessions = ndb.PickleProperty(repeated = True)
 	shopping_list = ndb.KeyProperty(kind = Products,repeated = True)
 	shopping_list_archived = ndb.KeyProperty(kind = Products,repeated = True)
+	location = ndb.GeoPtProperty()
+
 
 	@classmethod
 	def getUserIDs(self):
@@ -428,6 +430,26 @@ class Users(ndb.Model):
 			return (key.urlsafe(),'Registered Successfully.')
 
 	@classmethod
+	def update_info(self,_fname,_lname,_email,_user):
+		#Expects html escaped variables and valid user
+		if _fname != -1:
+			_user.fname = _fname
+		if _lname != -1:
+			_user.lname = _lname
+		if _email != -1:
+			_user.email = _email
+			#TODO set a verification process here!
+		_user.put()
+		return
+
+	@classmethod
+	def update_password(self,_pwd,_nwpwd,_user):
+		if _user.password == _pwd:
+			print "userdb: changing password: ", _user, _nwpwd
+			_user.password = _nwpwd
+			_user.put()
+	
+		@classmethod
 	def checkValidSession(self,_user,_session):
 		#First check for the user
 		print "Checking for user based on userid", _user
@@ -564,6 +586,17 @@ class Users(ndb.Model):
 			for k in user.shopping_list:
 				products.append(Products.get_by_id(k))
 
+	@classmethod
+	def updateLocation(self,_latitude,_longitude,_user):
+		#Expects float lat and long. And expects valid key id
+
+		if _user:
+			#If no shop found, shop object is nonetype
+			_user.location = ndb.GeoPt(_latitude,_longitude)
+			_user.put()
+			return True
+
+		return False
 
 
 #Shopkeeper
@@ -730,3 +763,13 @@ class Shops(ndb.Model):
 			
 			for k in shop.inventory:
 				products.append(Products.get_by_id(k))
+
+	@classmethod
+	def match_products(self,_product_list,_shop):
+		#Expects a valid shop.
+		if _shop.__class__ ==  Shops.query().get().__class__:
+			#It actually is a shop product.
+			match = 0
+			for p in _product_list:
+				for i in _shop.inventory:
+					return True #Continue post integration

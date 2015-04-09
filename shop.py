@@ -228,7 +228,7 @@ class LocationPage(Handler):
 			if _shop.location:
 				#print "location-page: trying to detect latitude", _shop.location
 				lat = _shop.location.lat
-				lon = shop.location.lon
+				lon = _shop.location.lon
 			else:
 				print "location-page: trying to detect latitude. None found"
 				lon = 72.629174
@@ -252,6 +252,8 @@ class LocationPage(Handler):
 			#Authenticated
 			print "location-page: found shop", _shop.shop_name
 			datastore.Shops.updateLocation(_lat,_log,_shop.key.id())
+		else: 
+			self.redirect("/shop/")
 
 class InventoryAdditionPage(Handler):
 	def get(self):
