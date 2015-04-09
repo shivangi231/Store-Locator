@@ -217,7 +217,7 @@ class MainPage(Handler):
 		_password = utils.encrypt(_password)
 		_user = datastore.Users.login(_email,_password)
 
-		if _user == -1:
+		if _user[0] == -1:
 		 	print "Incorrect credentials"
 		 	self.render("home.html", error = "Please recheck your credentials and try again,", email = _email)
 		else:
@@ -273,8 +273,9 @@ class SearchPageProduct(Handler):
 
 			if category and not query:
 				#Fetch products of this category. 
-				return True
-
+				categories = utils.remove_similarity(datastore.Categories.fetch_by_id(category,True))
+				products = datastore.Products.getProductsInCategories(categories)					
+				self.render("cust_search.html", categories = categories, products = products)
 
 			if query and category:
 				if len(query) > 0:
@@ -334,20 +335,45 @@ class ShoppingListAdd(Handler):
 		if _user != -1:
 			#User exists and cookie is correct.
 			query =	self.request.get('query')
-			if query:
+			category = self.request.get('category')
+			print "search: get: FOUND CATEGORY", category
+			if query and not category:
+
+				#Run a search disregarding any category based limit
 				if len(query) > 0:
-					
-					#Surely query exists and user has logged in.
+
+					#For sure, the query exists and user has logged in
 					products, categories, status = self.search_products(query)
 					if products and categories:
-						self.render("cust_search.html",products = products, categories = categories)
-
+						#WE did find something!
+						self.render("cust_search.html", categories = categories, products = products, query = query)
 					else:
-						self.render("cust_search.html", error = "No match found. Please try again with a different keyword")
+						#No result found
+						self.render("cust_search.html", error = "No match found. Please try again with a different keyword", query = query)
 				else:
 					self.render("cust_search.html", categories =  datastore.Categories.getRoots())
-			else:
+		
+
+			if category and not query:
+				#Fetch products of this category. 
+				categories = utils.remove_similarity(datastore.Categories.fetch_by_id(category,True))
+				products = datastore.Products.getProductsInCategories(categories)					
+				self.render("cust_search.html", categories = categories, products = products)
+
+			if query and category:
+				if len(query) > 0:
+					#For sure, the query exists and user has logged in
+					products, categories, status = self.search_products(query)
+					if products and categories:
+						#WE did find something!
+						#print "search: get: query and category: ", products
+						categories = datastore.Categories.fetch_by_id(category,True)
+						products = datastore.Products.filterProductInCategories(products,categories)
+						self.render("cust_search.html", categories = categories, products = products, query = query)
+
+			if not query and not category:
 				self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+
 		else:
 			#self.response.headers.add_header('Set-cookie','user =  guest')
 			self.redirect("/")

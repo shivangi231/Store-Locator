@@ -52,15 +52,15 @@ class Categories(ndb.Model):
 			return _category_key.get()
 		
 		category = _category_key.get()
-		children = self.getChildren(category)
-
+		children = utils.remove_similarity(self.getChildren(category))
+		#print "categoryb: getleafs: children are ", children
 		while True:
 			all_leaves = True
 			new_list = []
 			for child in children:
 				if not self.isLeaf(child.key):
 					all_leaves = False
-					new_list += self.getChildren(child)
+					new_list += utils.remove_similarity(self.getChildren(child))
 				else:
 					new_list.append(child)
 			children = new_list
@@ -343,12 +343,17 @@ class Products(ndb.Model):
 	@classmethod
 	def getProductsInCategory(self,_category):
 		#Expects entity
+		print "productdb: getProductsInCategory: ", _category
 		_products = Products.query(Products.category == _category.key).fetch()
 		return _products
 
 	@classmethod
 	def getProductsInCategories(self,_category_list):
 		#Expects entity
+		for c in _category_list[:]:
+			if not Categories.isLeaf(c.key):
+				_category_list += Categories.getLeafs(c.key)
+
 		_products = []
 		for _category in _category_list:
 			_products += self.getProductsInCategory(_category)
