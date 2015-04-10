@@ -33,7 +33,7 @@ class Handler(webapp2.RequestHandler):
 			self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
 			self.response.headers.add_header('Set-cookie','session = %s'%str(""))
 			self.response.delete_cookie('shop')
-			self.response.delete_cookie('session')
+			self.response.delete_cookie('session_shop')
 			return _shop
 
 		_shop = datastore.Shops.checkValidSession(_shop,_session)
@@ -200,7 +200,7 @@ class MainPage(Handler):
 		_password = utils.encrypt(_password)
 		_shop = datastore.Shops.login(_email,_password)
 
-		if _shop == -1:
+		if _shop[0] == -1:
 			print "mainpage-post: incorrect credentials"
 			self.render("shop_home.html", error = "Invalid username or password", email = _email)
 		else:
@@ -220,9 +220,9 @@ class ProfilePage(Handler):
 			self.redirect("/shop/")
 
 class Infopage(Handler):
-    def get(self):
-    	_shop = self.check_cookies(self)
-    	if _shop != -1:
+	def get(self):
+		_shop = self.check_cookies(self)
+		if _shop != -1:
 			print "profile-get: found shop", _shop
 			self.render("shop_info.html" ,fname=_shop.fname,lname=_shop.lname,email=_shop.email,mobile=_shop.mobile,add=_shop.shop_address,_shopname=_shop.shop_name)
 		else:
@@ -413,10 +413,18 @@ class PasswordChange(Handler):
 		else:
 			self.redirect("/shop/")
 
+class LogoutPage(Handler):
+	def get(self):
+		url =  self.request.get('url')
+		print "INITIATING LOGOUT ", url
+		self.check_cookies(self,logout = True)
+		self.redirect(url)
+
 application = webapp2.WSGIApplication([('/shop/',MainPage),
 									 ('/shop/register',RegistrationPage),
 									 ('/shop/profile',ProfilePage),
-									 ('/shop/setlocation',LocationPage),
+									 ('/shop/location',LocationPage),
 									 ('/shop/addinventory',InventoryAdditionPage),
-									 ('/shop/inventory',InventoryManagementPage)
+									 ('/shop/inventory',InventoryManagementPage),
+									 ('/shop/logout',LogoutPage)
 									 ], debug=True)

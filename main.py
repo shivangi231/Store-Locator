@@ -3,6 +3,7 @@ import cgi
 import datetime
 import jinja2
 import webapp2
+import math
 
 import datastore		#Our databases
 import utils			#Misc utility class
@@ -304,7 +305,10 @@ class SearchPageProduct(Handler):
 			#User exists and cookie is correct.
 			length = self.request.get('length')
 			print "search :post: ", self.request			
-			
+
+			if _user.location == None:
+				self.redirect('/updatelocation')
+
 			#Sanitizing Length
 			try:
 				length = int(length)
@@ -320,13 +324,31 @@ class SearchPageProduct(Handler):
 					key = self.request.get('%s' % i)
 					if key:
 						products.append(str(key))
-						print "search-post: finding product ids: ", key
+						#print "search-post: finding product ids: ", key
 				print "search-post: products: ", products
 
 				
-				#if len(products) > 0:
+				if len(products) > 0:
 					#I have products that the user wants to buy - products
 					#I need the shops now.
+					radius = 10.0										#in kms
+					match_weight = 3
+					distance_weight= 1
+					selected_shops = []
+
+					shops = datastore.Shops.query().fetch()
+					#First find matches. then show shops.
+					#if lets say i find one shop with 60% match. I might wanna increase the radius to lets say twice to find 80% match. So exponentially weighted then.
+					for shop in shops:
+						distance = radius - abs(utils.distance_on_unit_sphere(_user.location.lat, _user.location.lon, shop.location.lat, shop.location.lon))
+						match = datastore.Shops.match_products(products,shop)
+						index = math.pow(10,distance/radius) + math.pow(10,match/200.0)
+						print "search: post: index: ", shop.email, shop.location, _user.location, distance, match, index
+						#Sort the array based on this index.
+						selected_shops.append((shop,index))
+
+					#I now have selected shops with me. Now we need to simply run them through an index and show them on the map. That i do not know how to! So lets just print the shops.
+					print selected_shops
 
 
 				#paresh - give a distance matrix
@@ -531,9 +553,6 @@ class PasswordChange(Handler):
 			self.redirect("/profileinfo?msg=Password_successfully_changed")
 		else:
 			self.redirect("/")
-
-
-
 
 application = webapp2.WSGIApplication([
 									('/',MainPage),

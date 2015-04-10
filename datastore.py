@@ -397,7 +397,6 @@ class Products(ndb.Model):
 		return result
 
 
-
 #Setup Users DB. and its methods acting as wrappers
 class Users(ndb.Model):
 	fname = ndb.StringProperty()
@@ -449,7 +448,7 @@ class Users(ndb.Model):
 			_user.password = _nwpwd
 			_user.put()
 
-		@classmethod
+	@classmethod
 	def checkValidSession(self,_user,_session):
 		#First check for the user
 		print "Checking for user based on userid", _user
@@ -640,7 +639,7 @@ class Shops(ndb.Model):
 			_shop.email = _email
 		if _mobile != -1:
 			_shop.mobile = _mobile
-		if _shop_name != -1
+		if _shop_name != -1:
 			_shop.shop_name = _shop_name
 		if _shop_address != -1:
 			_shop.shop_address = _shop_address
@@ -671,7 +670,6 @@ class Shops(ndb.Model):
 			return None
 		return True
 
-	#Login Function
 	@classmethod
 	def login(self,_email,_password):
 		session = (-1,'Does not exist')
@@ -797,9 +795,45 @@ class Shops(ndb.Model):
 	@classmethod
 	def match_products(self,_product_list,_shop):
 		#Expects a valid shop.
+		percent = 0
 		if _shop.__class__ ==  Shops.query().get().__class__:
 			#It actually is a shop product.
-			match = 0
+			match = 0.0
+			#print "shopdb: match_products: about to match: ", _product_list _shop.inventory
 			for p in _product_list:
+				#print "shopdb: match_products: about to look for: ", p
 				for i in _shop.inventory:
-					return True #Continue post integration
+					if str(p) == str(i.id()):
+						match += 1
+			percent =  match*100/float(len(_product_list))
+		return percent
+
+
+	@classmethod
+	def logout(self,_shop,_session):
+		print "shopdb: logout: Checking for user based on userid", _shop
+		shops = Shops.query()
+		shop = None
+		for sp in shops:
+			if str(sp.key.id()) == _shop:
+				shop = sp
+				break
+
+		print shop
+		result = -1
+		if not shop:
+			return result
+
+		for session in shop.active_sessions[:]:
+			print session[0], _session
+			if session[0] == _session:
+				remaining_session  = []
+				for s in shop.active_sessions:
+					if not s == session:
+						remaining_session.append(s)
+				shop.active_sessions = remaining_session
+				shop.put()
+				result = shop
+				break
+
+		return result
