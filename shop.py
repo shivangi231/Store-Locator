@@ -25,15 +25,13 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_shop = handler.request.cookies.get('shop')
 		_session = handler.request.cookies.get('session_shop')
-		self.response.delete_cookie('user')
-		self.response.delete_cookie('session')
+		self.response.headers.add_header('Set-cookie','user = %s'%str(""))
+		self.response.headers.add_header('Set-cookie','session = %s'%str(""))
 		print "check_cookies: ", _shop, _session
 		if logout:
 			_shop = datastore.Shops.logout(_shop,_session)
 			self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
-			self.response.headers.add_header('Set-cookie','session = %s'%str(""))
-			self.response.delete_cookie('shop')
-			self.response.delete_cookie('session_shop')
+			self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
 			return _shop
 
 		_shop = datastore.Shops.checkValidSession(_shop,_session)
@@ -408,8 +406,13 @@ class PasswordChange(Handler):
 			_cnew_pass = self.request.get('cnwpwd')
 
 			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
-			datastore.Shops.update_pass(_old_pass,_new_pass,_shop)
-			self.redirect("/shop/profile?msg=Password_successfully_changed")
+			if not _new_pass == '-1':
+				if datastore.Shops.update_pass(_old_pass,_new_pass,_shop):
+					self.redirect("/shop/profile?msg=Password_successfully_changed")
+				else:
+					self.render("update_pass.html", error = "Wrong password entered")
+			else:
+				self.render("update_pass.html", error = "Passwords do not match")			
 		else:
 			self.redirect("/shop/")
 
@@ -426,5 +429,6 @@ application = webapp2.WSGIApplication([('/shop/',MainPage),
 									 ('/shop/location',LocationPage),
 									 ('/shop/addinventory',InventoryAdditionPage),
 									 ('/shop/inventory',InventoryManagementPage),
-									 ('/shop/logout',LogoutPage)
+									 ('/shop/logout',LogoutPage),
+									 ('/shop/info',Infopage)
 									 ], debug=True)

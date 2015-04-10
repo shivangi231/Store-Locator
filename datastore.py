@@ -431,11 +431,11 @@ class Users(ndb.Model):
 	@classmethod
 	def update_info(self,_fname,_lname,_email,_user):
 		#Expects html escaped variables and valid user
-		if _fname != -1:
+		if _fname != '-1':
 			_user.fname = _fname
-		if _lname != -1:
+		if _lname != '-1':
 			_user.lname = _lname
-		if _email != -1:
+		if _email != '-1':
 			_user.email = _email
 			#TODO set a verification process here!
 		_user.put()
@@ -447,6 +447,9 @@ class Users(ndb.Model):
 			print "userdb: changing password: ", _user, _nwpwd
 			_user.password = _nwpwd
 			_user.put()
+			return True
+		else:
+			return False
 
 	@classmethod
 	def checkValidSession(self,_user,_session):
@@ -631,17 +634,17 @@ class Shops(ndb.Model):
 		if not _shop:
 			return
 
-		if _fname != -1:
+		if _fname != '-1':
 			_shop.fname = _fname
-		if _lname != -1:
+		if _lname != '-1':
 			_shop.lname = _lname
-		if _email != -1:
+		if _email != '-1':
 			_shop.email = _email
-		if _mobile != -1:
+		if _mobile != '-1':
 			_shop.mobile = _mobile
-		if _shop_name != -1:
+		if _shop_name != '-1':
 			_shop.shop_name = _shop_name
-		if _shop_address != -1:
+		if _shop_address != '-1':
 			_shop.shop_address = _shop_address
 
 		_shop.put()

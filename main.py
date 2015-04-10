@@ -26,15 +26,13 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_user = handler.request.cookies.get('user')
 		_session = handler.request.cookies.get('session')
-		self.response.delete_cookie('shop')
-		self.response.delete_cookie('session_shop')
+		self.response.headers.add_header('Set-cookie','shop = %s' % '')
+		self.response.headers.add_header('Set-cookie','session_shop = %s' % '')
 
 		if logout:
 			_user = datastore.Users.logout(_user,_session)
 			self.response.headers.add_header('Set-cookie','user = %s'%str(""))
 			self.response.headers.add_header('Set-cookie','session = %s'%str(""))
-			self.response.delete_cookie('user')
-			self.response.delete_cookie('session')
 			return _user
 
 		_user = datastore.Users.checkValidSession(_user,_session)
@@ -528,7 +526,7 @@ class ProfilePage(Handler):
 			_fname=utils.verify_name(self.request.get('fname'))[0]
 			_lname=utils.verify_name(self.request.get('lname'))[0]
 			_email=utils.verify_email(self.request.get('email'))[0]
-			datastore.Users.update_info(_fname,_lname,_email)
+			datastore.Users.update_info(_fname,_lname,_email,_user)
 			self.redirect("/profileinfo")
 		else:
 			self.redirect("/")
@@ -549,10 +547,20 @@ class PasswordChange(Handler):
 			_cnew_pass = self.request.get('cnwpwd')
 
 			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
-			datastore.Users.update_pass(_old_pass,_new_pass,_user)
-			self.redirect("/profileinfo?msg=Password_successfully_changed")
+			if not _new_pass == '-1':
+				if datastore.Users.update_password(_old_pass,_new_pass,_user):
+					self.redirect("/profileinfo?msg=Password_successfully_changed")
+				else:
+					self.render("update_pass.html", error = "Incorrect Password")
+			else:
+				self.render("update_pass.html",error = "New passwords do not match")
+
 		else:
 			self.redirect("/")
+
+class ShopRedirection(Handler):
+	def get(self):
+		self.redirect('/shop/')
 
 application = webapp2.WSGIApplication([
 									('/',MainPage),
@@ -569,5 +577,7 @@ application = webapp2.WSGIApplication([
 									('/updatelocation',LocationPage),
 									('/profileinfo',ProfilePage),
 									('/updatepwd',PasswordChange)
+									('/shop',ShopRedirection)
 									], debug=True)
+
 
