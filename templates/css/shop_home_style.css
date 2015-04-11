@@ -14,13 +14,32 @@ body,html{
 	width:100%;
 	min-height:700px;
 	}
-.head-logo{
+
+.banner-info{
+margin-top:266px;
+}
+.banner-info h1{
+	color: #ffffff;
+	text-align: center;
+	margin:0 0 12px 0;
+	font-size: 48px;
+	font-weight: 700;
+	}
+.banner-info p{
+	margin:0;
+	color: #ffffff;
+	font-size: 32px;
+	text-align: center;
+	}
+	
+/*.head-logo{
 	float:left;
 	margin: 2em 0 0 3em;
 	}
 .head-logo a{
 	display:block;
 	}
+*/
 	
 .banner-nav{
 	float:right;
@@ -62,7 +81,7 @@ body,html{
 	width: 45%;
 	}
 .banner-info-left h3{
-	color:#000;
+	color:#fff;
 	margin:2em 0;
 	font-size:30px;
 	font-family: 'Montserrat', sans-serif;
@@ -171,7 +190,7 @@ nav a {
 /*-- //banner --*/
 /*-- banner-bottom */
 .banner-bottom{
-	text-align:center;
+	text-align:left;
 	padding:6em 0 8em;
 	}
 .banner-bottom-info h3{
@@ -1510,6 +1529,28 @@ ul#filters {
 
 
 
+
+.view{
+	text-align:center;
+	margin-top:78px;
+	}
+.view a{
+	color: #ffffff;
+	padding: 12px 62px 12px 38px;
+	text-decoration: none;
+	background: url("../images/cus_home_images/arrow.png") no-repeat 189px 17px #99cc33;
+	border-radius: 5px;
+	font-size: 20px;
+	}
+.view a:hover{
+	border:3px solid #99cc33;
+	color:#99cc33;
+	background: url("../images/cus_home_images/2.png") no-repeat 186px 14px #ffffff;
+	text-decoration: none;
+	}
+	
+	
+	
 /**fourth-login**/
 
 /* start editing from here */
@@ -1635,6 +1676,15 @@ background: url(../images/shop_home_images/tip1.png) no-repeat 178px -1px #8cc73
 	width: 42%;
 	margin: 0 auto;
 	}
+	
+		.view a {
+		padding: 12px 48px 12px 20px;
+		background: url("../images/cus_home_images/arrow.png") no-repeat 153px 16px #99cc33;
+		font-size: 18px;
+		}
+	.view a:hover {
+		background: url("../images/cus_home_images/2.png") no-repeat 150px 13px #ffffff;
+		}
 
 }
 @media (max-width:768px){
@@ -1642,7 +1692,14 @@ background: url(../images/shop_home_images/tip1.png) no-repeat 178px -1px #8cc73
 	width: 54%;
 	margin: 0 auto;
 	}
-
+	
+	.view a {
+		padding: 12px 42px 12px 14px;
+		background: url("../images/cus_home_images/arrow.png") no-repeat 141px 16px #99cc33;
+		}
+	.view a:hover {
+		background: url("../images/cus_home_images/2.png") no-repeat 138px 13px #ffffff;
+		}
 
 	.fourth-login input[type="submit"]{
 	background: url(../images/shop_home_images/tip1.png) no-repeat 146px -1px #eac85d;
@@ -1658,6 +1715,15 @@ background: url(../images/shop_home_images/tip1.png) no-repeat 178px -1px #8cc73
 	width: 67%;
 	margin: 0 auto;
 	}
+	
+		.view a {
+		padding: 12px 31px 12px 12px;
+		background: url("../images/cus_home_images/arrow.png") no-repeat 123px 15px #99cc33;
+		font-size: 16px;
+		}
+	.view a:hover {
+		background: url("../images/cus_home_images/2.png") no-repeat 120px 12px #ffffff;
+		}
 
 	.block {
 	padding: 1.6em 0em;
@@ -1680,6 +1746,18 @@ background: url(../images/shop_home_images/tip1.png) no-repeat 178px -1px #8cc73
 	margin: 0 auto;
 	}
 
+	
+		.view {
+		margin-top: 50px;
+		}
+	.view a {
+		padding: 8px 27px 8px 12px;
+		background: url("../images/cus_home_images/arrow.png") no-repeat 118px 10px #99cc33;
+		font-size: 16px;
+		}
+	.view a:hover {
+		background: url("../images/cus_home_images/2.png") no-repeat 115px 7px #ffffff;
+		}
 
 	.fourth-login input[type="submit"] {
 	background: url(../images/shop_home_images/tip1.png) no-repeat 144px -1px #eac85d;
@@ -1719,8 +1797,6 @@ background: url(../images/shop_home_images/tip1.png) no-repeat 178px -1px #8cc73
 
 }
 
-
-	
 	
 	
 .learnmore {
