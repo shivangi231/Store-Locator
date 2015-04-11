@@ -346,8 +346,11 @@ class SearchPageProduct(Handler):
 						selected_shops.append((shop,index))
 
 					#I now have selected shops with me. Now we need to simply run them through an index and show them on the map. That i do not know how to! So lets just print the shops.
-					print selected_shops
-
+					#let is a get a list of cordinate tuples
+					cordinates = []
+					for shop in selected_shops:
+						cordinates.append((shop[0].location.lat,shop[0].location.lon))
+					self.render("map.html",cordinates = cordinates)
 
 				#paresh - give a distance matrix
 				#nikhil - based on a list of shops, show them on google maps
@@ -576,7 +579,7 @@ application = webapp2.WSGIApplication([
 									('/shoppinglist',ShoppingListManage),
 									('/updatelocation',LocationPage),
 									('/profileinfo',ProfilePage),
-									('/updatepwd',PasswordChange)
+									('/updatepwd',PasswordChange),
 									('/shop',ShopRedirection)
 									], debug=True)
 

@@ -23,15 +23,19 @@ class Handler(webapp2.RequestHandler):
 		self.write(self.render_Str(template, **kw))
 
 	def check_cookies(self, handler, logout = False):
-		_shop = handler.request.cookies.get('shop')
-		_session = handler.request.cookies.get('session_shop')
-		self.response.headers.add_header('Set-cookie','user = %s'%str(""))
+		_shop = self.request.cookies.get('shop')
+		_session = self.request.cookies.get('session_shop')
+		self.request.cookies.delete('user')
+		self.request.cookies.delete('session')
+		#self.response.headers.add_header('Set-cookie','user = %s'%str(""))
 		self.response.headers.add_header('Set-cookie','session = %s'%str(""))
-		print "check_cookies: ", _shop, _session
+		#print "check_cookies: ", _shop, _session
 		if logout:
 			_shop = datastore.Shops.logout(_shop,_session)
 			self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
 			self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
+			self.delete.cookie('shop')
+			self.delete.cookie('session_shop')
 			return _shop
 
 		_shop = datastore.Shops.checkValidSession(_shop,_session)
@@ -345,7 +349,6 @@ class InventoryAdditionPage(Handler):
 						datastore.Shops.add_product(key,_shop.key.id())
 						print "add-shopping: post: products: ", products
 						self.redirect("/shop/inventory")
-
 		else:
 			self.redirect("/shop/")
 
