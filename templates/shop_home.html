@@ -185,9 +185,16 @@
 					<input value="PASSWORD" name="pass" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}" type="password">
 				</div>
 					<input onclick="myFunction()" value="LOG IN" type="submit"> 
-					<div class="view"><a href="/registration">SIGN UP</a></div>
+				{%if error%}	
+				<div class="alert alert-danger" role="alert">
+				<span class="sr-only">Error:</span>
+  					{{error}}
+
+			</div>
+			{%endif%}
+			<div class="view"><a href="/registration">SIGN UP</a></div>
 			</form>
-			
+
 		</div>
 		</div>	
 
