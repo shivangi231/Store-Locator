@@ -131,7 +131,7 @@ class Handler(webapp2.RequestHandler):
 class RegistrationPage(Handler):
 	def get(self):
 		self.response.headers['Content-Type']='text/html'
-		self.render("shop_reg.html",fname = 'First Name', lname = 'Last Name', email = 'Email Address', mobile = 'Mobile Number', shop_name = 'Shop Name', shop_add = 'Shop Address')
+		self.render("shop_reg.html")
 
 	def post(self):
 		register_status = 0
@@ -173,11 +173,12 @@ class RegistrationPage(Handler):
 			print "/registration-post: shopname", _shop_name
 			print "/registration-post: shopaddress", _shop_address
 			print "/registration-post: password", _password
+		
 			self.render("shop_reg.html", error = error, fname = _fname, lname = _lname, email = _email, mobile = _mobile, shop_name = _shop_name, shop_add = _shop_address)
 			return
 		
 		print "/registration-post: successfully registered"
-		self.redirect("/shop/")
+		self.redirect("/shop/#login")
 
 class MainPage(Handler):
 	def get(self):
@@ -423,6 +424,7 @@ class LogoutPage(Handler):
 		self.redirect(url)
 
 application = webapp2.WSGIApplication([('/shop/',MainPage),
+									 ('/shop/registration',RegistrationPage),
 									 ('/shop/register',RegistrationPage),
 									 ('/shop/profile',ProfilePage),
 									 ('/shop/location',LocationPage),

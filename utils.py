@@ -42,7 +42,17 @@ def verify_passwords(pwd,cpwd):
 def verify_mobile(mobile):
 	#expects string
 	print "utils: verify_mobile: ", mobile
-	return (int(mobile),'Success')
+	try:
+		mobile = int(mobile)
+	except:
+		print "utils: verify_mobile: mobile number is not integer ", mobile
+
+	if mobile.__class__ == int(3).__class__:
+		#successfully converted to integer
+		return (mobile,'Success')
+
+	else:
+		return ('-1',"Mobile number is a number")
 
 def verify_text(text):
 	return (text,'Success')

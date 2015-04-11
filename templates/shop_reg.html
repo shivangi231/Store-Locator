@@ -4,7 +4,10 @@
 <head>
 	<title>Store Locator - Register</title>
 		<meta charset="utf-8">
-		<link href="/css/shop_register_style.css" rel='stylesheet' type='text/css' />
+		<title>Store Locator_Shopkeeper Loading page</title>
+		<link href="/css/shop_home_style.css" rel="stylesheet" type="text/css" media="all">
+		<link href="/css/shop_home_bootstrap.css" rel="stylesheet" type="text/css" media="all">
+		<link href="/css/shop_home_style.css" rel='stylesheet' type='text/css' />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 		<!--webfonts-->
@@ -19,50 +22,54 @@
 						<img src="" alt=""/>
 						
 					</div>
-				<form method="POST">
-					<li>
-						<input type="text" class="text" value="{{fname}}" name="fname" ><a href="#" class=" icon user"></a>
-					</li>
-					<li>
-						<input type="text" class="text" name="lname" value="{{lname}}" ><a href="#" class=" icon user"></a>
-					</li>
-					<li>
-						<input type="text" class="text" name="shop_name" value="{{shop_name}}" ><a href="#" class=" icon user"></a>
-					</li>
-					<li>
-						<input type="text" class="text" name="shop_add" value="{{shop_add}}" ><a href="#" class=" icon user"></a>
-					</li>
-					<li>
-						<input type="text" class="text" value="{{mobile}}" name="mobile" ><a href="#" class=" icon user"></a>
-					</li>
-					<li>
-						<input type="text" class="text" name="email" value="{{email}}" ><a href="#" class=" icon user"></a>
-					</li>
-					<li>
-						<input type="password"  name="pwd" value="Password" ><a href="#" class=" icon lock"></a>
+				
 
-					</li>
+				<div class="login-06">
+					<div class="fourth-login">
+					<form class="four" method="post">
+						<div class="green">
+							<input type="text" class="text" value="{{fname}}" placeholder = "First Name" name="fname" >
+						</div>
+						<div class="green">
+							<input type="text" class="text" value="{{lname}}" placeholder = "Last Name" name="lname" >
+						</div>
 						
-					<li>
-						<input type="password"  name= "crpwd" value="Re-type Password" ><a href="#" class=" icon lock"></a>
-					</li>
-					
+						<div class="block">
+							<input type="text" class="text green2" value="{{shop_name}}" placeholder = "Shop Name" name="shop_name" >
+						</div>
+						<div class="block">
+							<input type="text" class="text green2" value="{{shop_add}}" placeholder = "Shop Address" name="shop_add" >
+						</div>
+
+						<div class="green">
+							<input type="text" class="text" value="{{email}}" placeholder = "Email Address" name="email" >
+						</div>
+						<div class="green">
+
+							<input type="text" class="text" value="{{mobile}}" placeholder = "Mobile Number" name="mobile" >
+						</div>
+
 						
-					
-					<div class="p-container">
-							<input type="submit"  value="SIGN UP" >
-							<div class="clear"> </div>
-					</div>
-				</form>
+						<div class="block">
+							<input type="password" placeholder = "Password" class="text" name="pwd" >
+						</div>
+						<div class="block">
+							<input type="password" placeholder = "Re-enter Password"  class="text" name="crpwd" >
+						</div>
 
-			</div>
-			<div class="alert alert-warning" role="alert">{{error}}</div>
-		  <!-----start-copyright---->
-   					<div class="copy-right">
+							<input onclick="myFunction()" value="SIGN UP" type="submit"> 
 
-						<p>Store Locator</a></p> 
-					</div>
-				<!-----//end-copyright---->
-		 		
+						{%if error%}	
+							<div class="alert alert-warning" role="alert">
+							<span class="sr-only">Error:</span>
+			  					{{error}}
+			  				</div>
+						{%endif%}
+						
+						</form>
+						</div>
+						</div>
+						</div>
+
 </body>
 </html>

@@ -176,13 +176,13 @@
 <!-- //login -->
 
 <div class="login-06">
-		<div class="fourth-login">
+		<div class="fourth-login" id="login">
 			<form class="four" method="post">
 				<div class="green">
 					<input class="text" name="email" value="Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'EMAIL';}" type="text">
 				</div>
 				<div class="block">
-					<input value="PASSWORD" name="pass" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}" type="password">
+					<input value="PASSWORD" name="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'PASSWORD';}" type="password">
 				</div>
 					<input onclick="myFunction()" value="LOG IN" type="submit"> 
 				{%if error%}	
@@ -192,7 +192,7 @@
 
 			</div>
 			{%endif%}
-			<div class="view"><a href="/registration">SIGN UP</a></div>
+			<div class="view"><a href="/shop/registration">SIGN UP</a></div>
 			</form>
 
 		</div>
@@ -207,7 +207,7 @@
 	
 <!-- //contact -->
 <!-- footer -->
-	<div class="footer">
+	<div class="footer" id="footer">
 	<div class="container">
 		<div class="temp">
 			<p>Store Locator</p>
