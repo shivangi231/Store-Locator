@@ -32,7 +32,7 @@ def verify_email(email):
 
 def verify_passwords(pwd,cpwd):
 	if pwd == cpwd:
-		if len(pwd) > 8:
+		if len(pwd) >= 8:
 			return (pwd,'Success')
 		else:
 			return ('-1','Password too short!')

@@ -27,9 +27,9 @@
 // The markers are stored in an array.
 // The user can then click an option to hide, show or delete the markers.
 var map;
-var cordinates = [,];
+var cordinates = [];
 {%for cordinate in cordinates%}
-cordinates[cordinates.length] = new google.maps.LatLng({{cordinate[0]}},{{cordinate[1]}});
+cordinates.push(new google.maps.LatLng({{cordinate[0]}},{{cordinate[1]}}));
 {%endfor%}
 var trip=cordinates;
 var markers = [];

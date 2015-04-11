@@ -25,22 +25,18 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_shop = self.request.cookies.get('shop')
 		_session = self.request.cookies.get('session_shop')
-		self.request.cookies.delete('user')
-		self.request.cookies.delete('session')
-		#self.response.headers.add_header('Set-cookie','user = %s'%str(""))
+		self.response.headers.add_header('Set-cookie','user = %s'%str(""))
 		self.response.headers.add_header('Set-cookie','session = %s'%str(""))
-		#print "check_cookies: ", _shop, _session
+		print "check_cookies: ", _shop, _session
 		if logout:
 			_shop = datastore.Shops.logout(_shop,_session)
 			self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
 			self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
-			self.delete.cookie('shop')
-			self.delete.cookie('session_shop')
 			return _shop
 
-		_shop = datastore.Shops.checkValidSession(_shop,_session)
-		print "check_cookies User found", _shop
-		return _shop
+		shop = datastore.Shops.checkValidSession(_shop,_session)
+		print "check_cookies shop found", shop
+		return shop
 
 	def search_products(self, query):
 
@@ -260,7 +256,7 @@ class LocationPage(Handler):
 				print "location-page: trying to detect latitude. None found"
 				lon = 72.629174
 				lat = 23.190373
-			self.render("map.html",lat = lat, long = lon)
+			self.render("updatelocation.html",lat = lat, long = lon)
 		else:
 			self.redirect("/shop/")
 	def post(self):

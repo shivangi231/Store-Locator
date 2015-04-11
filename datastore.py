@@ -657,7 +657,6 @@ class Shops(ndb.Model):
 			_shop.password = _nwpwd
 			_shop.put()
 
-
 	@classmethod
 	def shopExists(self,_shop_name,_email,_need_user = False):
 		#If need user and user not exist then will return nonetype!
@@ -712,7 +711,7 @@ class Shops(ndb.Model):
 				shop = s
 				break
 
-		print shop
+		print "shopdb: checkvalid session: shop found:", shop
 		result = -1
 		if not shop:
 			return result
