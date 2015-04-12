@@ -1,0 +1,69 @@
+<!--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE html>
+<html>
+    
+	
+<head>
+	<title>Store Locator - Register</title>
+		<meta charset="utf-8">
+		<title>Customer Registration</title>
+		<link href="/css/shop_home_style.css" rel="stylesheet" type="text/css" media="all">
+		<link href="/css/shop_home_bootstrap.css" rel="stylesheet" type="text/css" media="all">
+		<link href="/css/shop_home_style.css" rel='stylesheet' type='text/css' />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+		<!--webfonts-->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
+		<!--//webfonts-->
+</head>
+<body>
+	
+				 <!-----start-main---->
+				<div class="registration-form">
+					<div class="head">
+						<img src="" alt=""/>
+						
+					</div>
+				
+
+				<div class="login-06">
+					<div class="fourth-login">
+					<form class="four" method="post">
+						<div class="green">
+							<input type="text" class="text" value="{{fname}}" placeholder = "First Name" name="fname" >
+						</div>
+						<div class="green">
+							<input type="text" class="text" value="{{lname}}" placeholder = "Last Name" name="lname" >
+						</div>
+						
+						
+
+						<div class="green">
+							<input type="text" class="text" value="{{email}}" placeholder = "Email Address" name="email" >
+						</div>
+												
+						<div class="block">
+							<input type="password" placeholder = "Password" class="text" name="pwd" >
+						</div>
+						<div class="block">
+							<input type="password" placeholder = "Re-enter Password"  class="text" name="crpwd" >
+						</div>
+
+							<input onclick="myFunction()" value="SIGN UP" type="submit"> 
+
+						{%if error%}	
+							<div class="alert alert-warning" role="alert">
+							<span class="sr-only">Error:</span>
+			  					{{error}}
+			  				</div>
+						{%endif%}
+						
+						</form>
+	
+</body>
+</html>

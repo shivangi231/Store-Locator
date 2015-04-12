@@ -1,0 +1,152 @@
+<html><head>
+	<title></title>
+	<link href="css/cus_home_style1.css" rel="stylesheet" type="text/css" media="all">
+	<!--fonts-->
+		<link href="css/cus_home_css1.css" rel="stylesheet" type="text/css">
+	<!--//fonts-->
+		<link href="css/cus_home_bootstrap1.css" rel="stylesheet" type="text/css" media="all">
+	<!-- for-mobile-apps -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="keywords" content="Store locator, shopping,">
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+	<!-- //for-mobile-apps -->
+	<!-- cust_home_js -->
+		<script type="text/javascript" src="js/cus_home_jquery_003.js"></script>
+	<!-- cust_home_js -->
+	<!-- start-smoth-scrolling -->
+		<script type="text/javascript" src="js/cus_home_move-top1.js"></script>
+		<script type="text/javascript" src="js/cus_home_easing1.js"></script>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$(".scroll").click(function(event){		
+					event.preventDefault();
+					$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+				});
+			});
+		</script>
+	<!-- start-smoth-scrolling -->
+
+</head>
+<body>
+<!-- banner -->
+<div id="home" class="banner">
+	<div class="container">
+		<div class="banner-info">
+			<h1 >Welcome to StoreLocator</h1>
+			<p>Looking for some products?</p>
+			<div class="view"><a href="#">Search Store</a></div>
+		</div>
+		
+	</div>
+</div>
+<!-- //banner -->
+<!-- navigation -->
+<div class="navigation">
+	<div class="container">
+		<div class="fixed-header">
+			<div class="nav-left">
+				<a href="#"><img "="" logo.png"="" alt=""></a>
+			</div>
+			<div class="nav-right">
+				<span class="menu"><img src="images/cus_home_images/menu.png" alt=""></span>
+					<nav class="cl-effect-1">
+						<ul class="nav1">
+							<li><a class="scroll" href="#home">Home</a></li>
+                            <li><a href="/shop/">ShopKeeper</a></li>
+							</ul>
+					</nav>
+					
+					<!-- script for menu -->
+					<script> 
+						$( "span.menu" ).click(function() {
+						$( "ul.nav1" ).slideToggle( 300, function() {
+						 // Animation complete.
+						});
+						});
+					</script>
+					<!-- //script for menu -->
+					<!-- script-for sticky-nav -->
+						<script>
+						$(document).ready(function() {
+							 var navoffeset=$(".navigation").offset().top;
+							 $(window).scroll(function(){
+								var scrollpos=$(window).scrollTop(); 
+								if(scrollpos >=navoffeset){
+									$(".navigation").addClass("fixed");
+								}else{
+									$(".navigation").removeClass("fixed");
+								}
+							 });
+							 
+						});
+						</script>
+					<!-- /script-for sticky-nav -->
+
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+</div>
+<!-- //navigation -->
+<div class="login-06">
+		<div class="fourth-login">
+			<form class="four" method="post">
+				<div class="green">
+					<input class="text" name="email" value="{{email}}"type="text" placeholder = "Enter your email address">
+				</div>
+				<div class="block">
+					<input placeholder="Enter your password here" name="password" type="password">
+				</div>
+					<input onclick="myFunction()" value="LOG IN" type="submit"> 
+                    {%if error%}
+                    <div class="alert alert-danger" role="alert">
+                    <span class="sr-only">Error:</span>
+                        {{error}}
+
+                </div>
+                {%endif%}
+					<div class="view"><a href="/registration">Sign Up</a></div>
+			</form>
+			
+		</div>
+		</div>
+
+	
+
+	
+
+
+
+
+<!-- footer -->
+<div class="footer">
+	<div class="container">
+		<div class="footer-left">
+			<p>Website By Team 23</p>
+		</div>
+		
+		<div class="clearfix"></div>
+	</div>
+</div>
+<!-- //footer -->
+<!-- smooth scrolling -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+		/*
+			var defaults = {
+			containerID: 'toTop', // fading element id
+			containerHoverID: 'toTopHover', // fading element hover id
+			scrollSpeed: 1200,
+			easingType: 'linear' 
+			};
+		*/								
+		$().UItoTop({ easingType: 'easeOutQuart' });
+		});
+	</script>
+	<a href="#" id="toTop" style="display: none;"><span id="toTopHover"></span><span id="toTopHover"></span> <span id="toTopHover" style="opacity: 1;"> </span></a>
+<!-- //smooth scrolling -->
+
+
+<a href="#" id="toTop">To Top</a>
+</div><a href="#" id="toTop">To Top</a></body></html>

@@ -132,7 +132,7 @@ class Handler(webapp2.RequestHandler):
 class Registration(Handler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/html'
-		self.render("registration_customer.html", fname = "First Name", lname = "Last Name", email = "Email ID")
+		self.render("customer_registration.html")
 
 	def post(self):
 		register_status = 0 #If status = 0, so far success. If it goes -1, something's wrong
@@ -151,11 +151,11 @@ class Registration(Handler):
 		_password,error = utils.verify_passwords(_password,_c_password)
 		
 		if _fname != '-1' and _lname != '-1' and _email != '-1' and _password != '-1':
-			register_status,error = datastore.Users.register(_fname,_lname,_email,_password)	#Now contains user key
+			register_status,error1 = datastore.Users.register(_fname,_lname,_email,_password)	#Now contains user key
 			print "/registration-post: ", register_status
 		else: 
 			print "/registration-post : INCORRECT DETECTED"
-			self.render("registration_customer.html", error = error, fname = _fname, lname = _lname, email = _email)
+			self.render("customer_registration.html", error = "Incorrect Details. Please input valid details", fname = _fname, lname = _lname, email = _email)
 			return
 
 		print "/registration-post: Successfully Registered"
@@ -206,11 +206,11 @@ class MainPage(Handler):
 		_user = self.check_cookies(self)
 		if _user != -1:
 			#User exists and cookie is correct.
-			self.render("home.html", user = _user.fname)
+			self.render("customer_home.html", user = _user.fname)
 		else:
 			#self.response.headers.add_header('Set-cookie','user =  guest')
 			print "NO COOKIE FOUND ON HOME PAGE"
-			self.render("home.html")
+			self.render("customer_home.html")
 
 	def post(self): 	
 		_email = self.request.get('email')
@@ -221,7 +221,7 @@ class MainPage(Handler):
 
 		if _user[0] == -1:
 		 	print "Incorrect credentials"
-		 	self.render("home.html", error = "Please recheck your credentials and try again,", email = _email)
+		 	self.render("customer_home.html", error = "Please recheck your credentials and try again,", email = _email)
 		else:
 		 	print "User successfully logged in!", _user
 		 	self.response.headers.add_header('Set-cookie','user = %s' % _user[1].key.id())
