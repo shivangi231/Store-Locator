@@ -25,8 +25,8 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_shop = self.request.cookies.get('shop')
 		_session = self.request.cookies.get('session_shop')
-		self.response.headers.add_header('Set-cookie','user = %s'%str(""))
-		self.response.headers.add_header('Set-cookie','session = %s'%str(""))
+		#self.response.headers.add_header('Set-cookie','user = %s'%str(""))
+		#self.response.headers.add_header('Set-cookie','session = %s'%str(""))
 		print "check_cookies: ", _shop, _session
 		if logout:
 			_shop = datastore.Shops.logout(_shop,_session)
@@ -46,7 +46,7 @@ class Handler(webapp2.RequestHandler):
 		products_category = []
 		products_brand = []
 		brands = []
-		found_category = False		
+		found_category = False
 		found_brand = False
 		found_products = False
 		done =  False
@@ -75,9 +75,9 @@ class Handler(webapp2.RequestHandler):
 
 		#print "Reached Here"
 		#Then we proceed to find some relevent products
-		products = utils.sort(datastore.Products.searchProduct(query,_ease = 70))		
+		products = utils.sort(datastore.Products.searchProduct(query,_ease = 70))
 		if utils.found_match(products):
-			#We have found some products spot on. So now simply render these products 
+			#We have found some products spot on. So now simply render these products
 			#along with some products from the brand and some from the categories. (If they were spot on too!)
 			products = utils.return_upto(products,_ease = 85)
 			found_products = True
@@ -85,7 +85,7 @@ class Handler(webapp2.RequestHandler):
 		products = utils.join(products,products_brand,products_category,_distinct = True)
 		print "search: get: product lenght: ", len(products)
 
-		#Evaluate our current situation. 
+		#Evaluate our current situation.
 		if not found_brand and not found_products and not found_products:
 			#At this point, assuming we have neither products or brands or categories match or even products match!
 			#We search for categories in a relaxed manner. And we search for products. Forget brand!
@@ -120,7 +120,7 @@ class Handler(webapp2.RequestHandler):
 			#Change! categories will always reflect the products selected!
 			categories = utils.add_similarity(datastore.Products.getCategoriesForProducts(utils.remove_similarity(products)))
 
-			#Finally render the two arrays	
+			#Finally render the two arrays
 			return utils.remove_similarity(products), utils.remove_similarity(categories), "Found"
 
 		else:
@@ -144,7 +144,7 @@ class RegistrationPage(Handler):
 		_mobile=self.request.get('mobile')
 		_shop_name=self.request.get('shop_name')
 		_shop_address=self.request.get('shop_add')
-	
+
 		_fname,error = utils.verify_name(_fname)
 		_lname,error = utils.verify_name(_lname)
 		_email,error = utils.verify_email(_email)
@@ -173,10 +173,10 @@ class RegistrationPage(Handler):
 			print "/registration-post: shopname", _shop_name
 			print "/registration-post: shopaddress", _shop_address
 			print "/registration-post: password", _password
-		
+
 			self.render("shop_reg.html", error = error, fname = _fname, lname = _lname, email = _email, mobile = _mobile, shop_name = _shop_name, shop_add = _shop_address)
 			return
-		
+
 		print "/registration-post: successfully registered"
 		self.redirect("/shop/#login")
 
@@ -206,14 +206,20 @@ class MainPage(Handler):
 			print "mainpage-post: shop logged in", _shop
 			self.response.headers.add_header('Set-cookie','shop = %s' % _shop[1].key.id())
 			self.response.headers.add_header('Set-cookie','session_shop = %s' % _shop[0])
-			self.redirect("/shop/profile")			
+			self.redirect("/shop/profile")
 
 class ProfilePage(Handler):
 	def get(self):
 		_shop = self.check_cookies(self)
 		if _shop != -1:
 			print "profile-get: found shop", _shop
-			self.render("shop_profile.html", shopname = _shop.shop_name)
+			products = []
+			for product in _shop.inventory:
+				p = datastore.Products.fetch_by_id(product.id())
+				c = p.category.get()
+				products.append((p,c))
+				#print products
+			self.render("shop_profile.html", shopname = _shop.shop_name.upper(), fname = _shop.fname, products = products)
 		else:
 			print "profile-get: no shop found in cookies"
 			self.redirect("/shop/")
@@ -264,19 +270,19 @@ class LocationPage(Handler):
 
 		_lat=self.request.get('lat')
 		_log=self.request.get('long')
-		
+
 		#Sanitize these inputs
 		_lat,_log = utils.verify_location(_lat,_log)
 		if _lat == 'error' or _log == 'error':
 			print "locationpage-post: invalid latitude and longitude ", self.request.get('lat'), self.request.get('long')
-			return 
+			return
 
 		_shop =  self.check_cookies(self)
 		if _shop != -1:
 			#Authenticated
 			print "location-page: found shop", _shop.shop_name
 			datastore.Shops.updateLocation(_lat,_log,_shop.key.id())
-		else: 
+		else:
 			self.redirect("/shop/")
 
 class InventoryAdditionPage(Handler):
@@ -300,9 +306,9 @@ class InventoryAdditionPage(Handler):
 
 
 			if category and not query:
-				#Fetch products of this category. 
+				#Fetch products of this category.
 				categories = utils.remove_similarity(datastore.Categories.fetch_by_id(category,True))
-				products = datastore.Products.getProductsInCategories(categories)					
+				products = datastore.Products.getProductsInCategories(categories)
 				self.render("cust_search.html", categories = categories, products = products)
 
 			if query and category:
@@ -325,7 +331,7 @@ class InventoryAdditionPage(Handler):
 		_shop =  self.check_cookies(self)
 		if _shop != -1:
 			length = self.request.get('length')
-			print "add-shopping: post: ", self.request			
+			print "add-shopping: post: ", self.request
 
 			#Sanitizing Length
 			try:
@@ -335,7 +341,7 @@ class InventoryAdditionPage(Handler):
 				print "add-shopping: post: length -", length
 
 			if length.__class__ == int('1').__class__ :
-				#Surely length is a valid length and we have products list and a valid user. 
+				#Surely length is a valid length and we have products list and a valid user.
 				#It doesnt
 				products = []
 				for i in range(length):
@@ -365,8 +371,8 @@ class InventoryManagementPage(Handler):
 		_shop = self.check_cookies(self)
 		if _shop != -1:
 			length = self.request.get('length')
-			print "inventorymanagement :post: ", self.request			
-			
+			print "inventorymanagement :post: ", self.request
+
 			#Sanitizing Length
 			try:
 				length = int(length)
@@ -375,7 +381,7 @@ class InventoryManagementPage(Handler):
 			print "inventorymanagement: post: length -", length
 
 			if length.__class__ == int('1').__class__ :
-				#Surely length is a valid length and we have products list and a valid user. 
+				#Surely length is a valid length and we have products list and a valid user.
 				#It doesnt
 				products = []
 				for i in range(length):
@@ -412,7 +418,7 @@ class PasswordChange(Handler):
 				else:
 					self.render("update_pass.html", error = "Wrong password entered")
 			else:
-				self.render("update_pass.html", error = "Passwords do not match")			
+				self.render("update_pass.html", error = "Passwords do not match")
 		else:
 			self.redirect("/shop/")
 
@@ -431,5 +437,5 @@ application = webapp2.WSGIApplication([('/shop/',MainPage),
 									 ('/shop/addinventory',InventoryAdditionPage),
 									 ('/shop/inventory',InventoryManagementPage),
 									 ('/shop/logout',LogoutPage),
-									 ('/shop/info',Infopage)
+									 ('/shop/editinfo',Infopage)
 									 ], debug=True)

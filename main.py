@@ -26,8 +26,8 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_user = handler.request.cookies.get('user')
 		_session = handler.request.cookies.get('session')
-		self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
-		self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
+#		self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
+#		self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
 
 		if logout:
 			_user = datastore.Users.logout(_user,_session)
