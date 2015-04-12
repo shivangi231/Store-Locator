@@ -298,18 +298,18 @@ class InventoryAdditionPage(Handler):
 				if len(query) > 0:
 					products, categories, status = self.search_products(query)
 					if products and categories:
-						self.render("cust_search.html", categories = categories, products = products, query = query)
+						self.render("shop_addinventory.html", categories = categories, products = products, query = query)
 					else:
-						self.render("cust_search.html", error = "No match found. Please try again with a different keyword", query = query)
+						self.render("shop_addinventory.html", error = "No match found. Please try again with a different keyword", query = query)
 				else:
-					self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+					self.render("shop_addinventory.html", categories =  datastore.Categories.getRoots())
 
 
 			if category and not query:
 				#Fetch products of this category.
 				categories = utils.remove_similarity(datastore.Categories.fetch_by_id(category,True))
 				products = datastore.Products.getProductsInCategories(categories)
-				self.render("cust_search.html", categories = categories, products = products)
+				self.render("shop_addinventory.html", categories = categories, products = products)
 
 			if query and category:
 				if len(query) > 0:
@@ -320,10 +320,10 @@ class InventoryAdditionPage(Handler):
 						#print "search: get: query and category: ", products
 						categories = datastore.Categories.fetch_by_id(category,True)
 						products = datastore.Products.filterProductInCategories(products,categories)
-						self.render("cust_search.html", categories = categories, products = products, query = query)
+						self.render("shop_addinventory.html", categories = categories, products = products, query = query)
 
 			if not query and not category:
-				self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+				self.render("shop_addinventory.html", categories =  datastore.Categories.getRoots())
 		else:
 			self.redirect("/shop/")
 
