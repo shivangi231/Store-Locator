@@ -263,7 +263,7 @@ class LocationPage(Handler):
 				print "location-page: trying to detect latitude. None found"
 				lon = 72.629174
 				lat = 23.190373
-			self.render("updatelocation.html",lat = lat, long = lon)
+			self.render("shop_updatelocation.html",lat = lat, long = lon,fname=_shop.fname, shopname = _shop.shop_name.upper(), lname = _shop.lname,add=_shop.shop_address,mobile = _shop.mobile)
 		else:
 			self.redirect("/shop/")
 	def post(self):
