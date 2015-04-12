@@ -229,7 +229,7 @@ class Infopage(Handler):
 		_shop = self.check_cookies(self)
 		if _shop != -1:
 			print "profile-get: found shop", _shop
-			self.render("shop_info.html" ,fname=_shop.fname,lname=_shop.lname,email=_shop.email,mobile=_shop.mobile,add=_shop.shop_address,_shopname=_shop.shop_name)
+			self.render("shop_info.html" ,fname=_shop.fname,lname=_shop.lname,email=_shop.email,mobile=_shop.mobile,add=_shop.shop_address,_shopname=_shop.shop_name,shopname = _shop.shop_name.upper())
 		else:
 			self.redirect("/shop/")
 
@@ -400,8 +400,10 @@ class PasswordChange(Handler):
 	def get(self):
 		_shop = self.check_cookies(self)
 		if _shop != -1:
-			self.render("update_pass.html")
+			print "updatepassword: rendering password page"
+			self.render("shop_password.html",shopname=_shop.shop_name.upper(),fname=_shop.fname,lname=_shop.lname)
 		else:
+			print "updatepassword: redirecting to home page"
 			self.redirect("/shop")
 
 	def post(self):
@@ -413,12 +415,12 @@ class PasswordChange(Handler):
 
 			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
 			if not _new_pass == '-1':
-				if datastore.Shops.update_pass(_old_pass,_new_pass,_shop):
-					self.redirect("/shop/profile?msg=Password_successfully_changed")
+				if datastore.Shops.update_password(_old_pass,_new_pass,_shop):
+					self.redirect("/shop/profile?msg=Password_successfully_changed",shopname=_shop.shop_name.upper(),fname=_shop.fname,lname=_shop.lname)
 				else:
-					self.render("update_pass.html", error = "Wrong password entered")
+					self.render("shop_password.html", error = "Wrong password entered",shopname=_shop.shop_name.upper(),fname=_shop.fname,lname=_shop.lname)
 			else:
-				self.render("update_pass.html", error = "Passwords do not match")
+				self.render("shop_password.html", error = "Passwords do not match",shopname=_shop.shop_name.upper(),fname=_shop.fname,lname=_shop.lname)
 		else:
 			self.redirect("/shop/")
 
@@ -429,13 +431,14 @@ class LogoutPage(Handler):
 		self.check_cookies(self,logout = True)
 		self.redirect(url)
 
-application = webapp2.WSGIApplication([('/shop/',MainPage),
-									 ('/shop/registration',RegistrationPage),
+application = webapp2.WSGIApplication([('/shop/registration',RegistrationPage),
 									 ('/shop/register',RegistrationPage),
 									 ('/shop/profile',ProfilePage),
 									 ('/shop/location',LocationPage),
 									 ('/shop/addinventory',InventoryAdditionPage),
 									 ('/shop/inventory',InventoryManagementPage),
 									 ('/shop/logout',LogoutPage),
-									 ('/shop/editinfo',Infopage)
+									 ('/shop/editinfo',Infopage),
+									 ('/shop/updatepassword',PasswordChange),
+									 ('/shop/',MainPage)
 									 ], debug=True)
