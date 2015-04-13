@@ -27,7 +27,7 @@ class UserResponseAuthentication(messages.Message):
   status = messages.EnumField(LoginResponseType, 1)
   userInformation = messages.MessageField(UserField, 2)
 
-class UserReponseRegistration(messages.Message):
+class UserReponseBoolean(messages.Message):
   status = messages.BooleanField(1)
 
 @endpoints.api(name='storelocator', version='v1')
@@ -57,14 +57,14 @@ class StoreLocatorAPI(remote.Service):
     except(TypeError):
       raise endpoints.NotFoundException('Error in the input format')
 
-  @endpoints.method(UserRequestAuthentication, UserReponseRegistration,
+  @endpoints.method(UserRequestAuthentication, UserReponseBoolean,
                     path="register", http_method='PUT',
                     name='greetings.register')
   def register_user(self, request):
       if len(Users.query(Users.email == request.email).fetch()) == 0:
         Users(email=request.email, password=request.password).put()
-        return UserReponseRegistration(status=True)
+        return UserReponseBoolean(status=True)
       else:
-        return UserReponseRegistration(status=False)
+        return UserReponseBoolean(status=False)
 
 APPLICATION = endpoints.api_server([StoreLocatorAPI])
