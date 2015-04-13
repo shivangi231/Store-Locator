@@ -29,6 +29,7 @@ class UserResponseAuthentication(messages.Message):
 
 class UserReponseBoolean(messages.Message):
   status = messages.BooleanField(1)
+  id = messages.IntegerField(2)
 
 @endpoints.api(name='storelocator', version='v1')
 class StoreLocatorAPI(remote.Service):
@@ -62,8 +63,8 @@ class StoreLocatorAPI(remote.Service):
                     name='greetings.register')
   def register_user(self, request):
       if len(Users.query(Users.email == request.email).fetch()) == 0:
-        Users(email=request.email, password=request.password).put()
-        return UserReponseBoolean(status=True)
+        id = Users(email=request.email, password=request.password).put().get().key.id()
+        return UserReponseBoolean(status=True, id=id)
       else:
         return UserReponseBoolean(status=False)
 
