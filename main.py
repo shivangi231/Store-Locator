@@ -206,7 +206,8 @@ class MainPage(Handler):
 		_user = self.check_cookies(self)
 		if _user != -1:
 			#User exists and cookie is correct.
-			self.render("customer_home.html", user = _user.fname)
+			#self.render("customer_profile.html", fname = _user.fname)
+			self.redirect('/profile')
 		else:
 			#self.response.headers.add_header('Set-cookie','user =  guest')
 			print "NO COOKIE FOUND ON HOME PAGE"
@@ -226,7 +227,7 @@ class MainPage(Handler):
 		 	print "User successfully logged in!", _user
 		 	self.response.headers.add_header('Set-cookie','user = %s' % _user[1].key.id())
 		 	self.response.headers.add_header('Set-cookie','session = %s' % _user[0])
-		 	self.redirect("/loggedin")
+		 	self.redirect("/search")
 
 class PrintUsers(Handler):
 	def get(self):
@@ -265,19 +266,19 @@ class SearchPageProduct(Handler):
 					products, categories, status = self.search_products(query)
 					if products and categories:
 						#WE did find something!
-						self.render("cust_search.html", categories = categories, products = products, query = query)
+						self.render("customer_search.html", categories = categories, products = products, query = query, fname = _user.fname)
 					else:
 						#No result found
-						self.render("cust_search.html", error = "No match found. Please try again with a different keyword", query = query)
+						self.render("customer_search.html", error = "No match found. Please try again with a different keyword", query = query, fname = _user.fname)
 				else:
-					self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+					self.render("customer_search.html", categories =  datastore.Categories.getRoots(), fname = _user.fname)
 		
 
 			if category and not query:
 				#Fetch products of this category. 
 				categories = utils.remove_similarity(datastore.Categories.fetch_by_id(category,True))
 				products = datastore.Products.getProductsInCategories(categories)					
-				self.render("cust_search.html", categories = categories, products = products)
+				self.render("customer_search.html", categories = categories, products = products , fname = _user.fname)
 
 			if query and category:
 				if len(query) > 0:
@@ -288,10 +289,10 @@ class SearchPageProduct(Handler):
 						#print "search: get: query and category: ", products
 						categories = datastore.Categories.fetch_by_id(category,True)
 						products = datastore.Products.filterProductInCategories(products,categories)
-						self.render("cust_search.html", categories = categories, products = products, query = query)
+						self.render("customer_search.html", categories = categories, products = products, query = query, fname = _user.fname)
 
 			if not query and not category:
-				self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+				self.render("customer_search.html", categories =  datastore.Categories.getRoots(), fname = _user.fname)
 
 		else:
 			#self.response.headers.add_header('Set-cookie','user =  guest')
@@ -329,7 +330,18 @@ class SearchPageProduct(Handler):
 				if len(products) > 0:
 					#I have products that the user wants to buy - products
 					#I need the shops now.
-					radius = 10.0										#in kms
+					radius = self.request.get('radius')
+					if not radius:
+						radius = 10.0										#in kms
+					if radius:
+						try:
+ 							radius = int(radius)
+ 						except:
+ 							print "search: post: invalid radius", radius
+
+ 						if not radius.__class__ == int('23').__class__:
+ 							self.redirect('/')		#Later redirect to someplace better!
+
 					match_weight = 3
 					distance_weight= 1
 					selected_shops = []
@@ -345,14 +357,17 @@ class SearchPageProduct(Handler):
 						#Sort the array based on this index.
 						selected_shops.append((shop,index))
 
+					if not len(selected_shops) > 0:
+						self.render("customer_search-ease.html", error = "No relevant shops found", products = products, radius = radius, fname = _user.fname)
 					#I now have selected shops with me. Now we need to simply run them through an index and show them on the map. That i do not know how to! So lets just print the shops.
 					#let is a get a list of cordinate tuples
 					cordinates = []
-
+					final_shops = []
 					for shop in selected_shops:
 						print shop[0].shop_name, shop[1]
 						cordinates.append((shop[0].location.lat,shop[0].location.lon))
-					self.render("map.html",cordinates = cordinates)
+						final_shops.append((shop[0],round(shop[1],2)))
+					self.render("map.html",cordinates = cordinates,shops=final_shops)
 
 				#paresh - give a distance matrix
 				#nikhil - based on a list of shops, show them on google maps
@@ -376,19 +391,19 @@ class ShoppingListAdd(Handler):
 					products, categories, status = self.search_products(query)
 					if products and categories:
 						#WE did find something!
-						self.render("cust_search.html", categories = categories, products = products, query = query)
+						self.render("customer_search.html", categories = categories, products = products, query = query)
 					else:
 						#No result found
-						self.render("cust_search.html", error = "No match found. Please try again with a different keyword", query = query)
+						self.render("customer_search.html", error = "No match found. Please try again with a different keyword", query = query)
 				else:
-					self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+					self.render("customer_search.html", categories =  datastore.Categories.getRoots())
 		
 
 			if category and not query:
 				#Fetch products of this category. 
 				categories = utils.remove_similarity(datastore.Categories.fetch_by_id(category,True))
 				products = datastore.Products.getProductsInCategories(categories)					
-				self.render("cust_search.html", categories = categories, products = products)
+				self.render("customer_search.html", categories = categories, products = products)
 
 			if query and category:
 				if len(query) > 0:
@@ -399,10 +414,10 @@ class ShoppingListAdd(Handler):
 						#print "search: get: query and category: ", products
 						categories = datastore.Categories.fetch_by_id(category,True)
 						products = datastore.Products.filterProductInCategories(products,categories)
-						self.render("cust_search.html", categories = categories, products = products, query = query)
+						self.render("customer_search.html", categories = categories, products = products, query = query)
 
 			if not query and not category:
-				self.render("cust_search.html", categories =  datastore.Categories.getRoots())
+				self.render("customer_search.html", categories =  datastore.Categories.getRoots())
 
 		else:
 			#self.response.headers.add_header('Set-cookie','user =  guest')
@@ -434,7 +449,7 @@ class ShoppingListAdd(Handler):
 						print "add-shopping: post: finding product ids: ", key
 						datastore.Users.add_product(key,_user.key.id())
 				print "add-shopping: post: products: ", products
-				self.redirect("/shoppinglist")
+				self.redirect("/profile")
 		else:
 			self.redirect("/")
 
@@ -495,7 +510,7 @@ class LocationPage(Handler):
 				print "location-page: trying to detect latitude. None found"
 				lon = 72.629174
 				lat = 23.190373
-			self.render("customer_map.html",lat = lat, long = lon)
+			self.render("customer_map.html",lat = lat, long = lon,fname = _user.fname)
 		else:
 			self.redirect("/")
 
@@ -515,32 +530,61 @@ class LocationPage(Handler):
 			#Authenticated
 			print "location-page: found shop", _user.fname
 			datastore.Users.updateLocation(_lat,_log,_user)
-			self.redirect("/loggedin")
+			self.redirect("/profile")
 
 class ProfilePage(Handler):
 	def get(self):
 		_user = self.check_cookies(self)
 		if _user != -1:
-			self.render("customer_info.html" ,fname=_user.fname,lname=_user.lname,email=_user.email)
+			products = []
+			for product in _user.shopping_list:
+				p = datastore.Products.fetch_by_id(product.id())
+				c = p.category.get()
+				products.append((p,c))
+				#print products
+			self.render("customer_profile.html" ,fname=_user.fname,lname=_user.lname,email=_user.email,products=products)
 		else:
 			self.redirect("/")
 
 	def post(self):
 		_user = self.check_cookies(self)
 		if _user != -1:
-			_fname=utils.verify_name(self.request.get('fname'))[0]
-			_lname=utils.verify_name(self.request.get('lname'))[0]
-			_email=utils.verify_email(self.request.get('email'))[0]
-			datastore.Users.update_info(_fname,_lname,_email,_user)
-			self.redirect("/profileinfo")
-		else:
-			self.redirect("/")
+			#User exists and cookie is correct.
+			length = self.request.get('length')
+			print "profile: post: ", self.request			
+			
+			#Sanitizing Length
+			try:
+				length = int(length)
+			except:
+				print "shopping_list :post: length is not a number", length
+			print "shopping_list-post: length -", length
+
+			if length.__class__ == int('1').__class__ :
+				#Surely length is a valid length and we have products list and a valid user. 
+				#It doesnt
+				
+				for i in range(length):
+					key = self.request.get('%s' % i)
+					if key:
+						#Here for sure i have one by one product key. May or may not be geniuine.
+						print "shopping_list-post: finding product ids: ", key
+						datastore.Users.remove_product(key,_user.key.id())
+						
+				products = []
+				print "shopping-list: post: trying to find the product by key ", key
+				for product in _user.shopping_list:
+					p = datastore.Products.fetch_by_id(key)
+					c = p.category.get()
+					products.append((p,c))
+				print "shopping_list-post: products: ", products
+			self.render("customer_profile.html" ,fname=_user.fname,lname=_user.lname,email=_user.email,products=products)
 
 class PasswordChange(Handler):
 	def get(self):
 		_user = self.check_cookies(self)
 		if _user != -1:
-			self.render("update_pass.html")
+			self.render("customer_update_pass.html",fname = _user.fname)
 		else:
 			self.redirect("/")
 
@@ -554,11 +598,11 @@ class PasswordChange(Handler):
 			_new_pass = utils.verify_passwords(_new_pass,_cnew_pass)[0]
 			if not _new_pass == '-1':
 				if datastore.Users.update_password(_old_pass,_new_pass,_user):
-					self.redirect("/profileinfo?msg=Password_successfully_changed")
+					self.redirect("/profile?msg=Password_successfully_changed")
 				else:
-					self.render("update_pass.html", error = "Incorrect Password")
+					self.render("customer_update_pass.html", error = "Incorrect Password", fname = _user.fname)
 			else:
-				self.render("update_pass.html",error = "New passwords do not match")
+				self.render("customer_update_pass.html",error = "New passwords do not match, or are of inadequate length.",fname = _user.fname)
 
 		else:
 			self.redirect("/")
@@ -566,6 +610,26 @@ class PasswordChange(Handler):
 class ShopRedirection(Handler):
 	def get(self):
 		self.redirect('/shop/')
+
+class InfoPage(Handler):
+	def get(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			self.render("customer_info.html" ,fname=_user.fname,lname=_user.lname,email=_user.email)
+
+	def post(self):
+		_user = self.check_cookies(self)
+		if _user != -1:
+			_fname=utils.verify_name(self.request.get('fname'))[0]
+			_lname=utils.verify_name(self.request.get('lname'))[0]
+			_email=utils.verify_email(self.request.get('email'))[0]
+			datastore.Users.update_info(_fname,_lname,_email,_user)
+			self.render("customer_info.html" ,fname=_user.fname,lname=_user.lname,email=_user.email)
+
+		else:
+			self.redirect("/")
+
+
 
 application = webapp2.WSGIApplication([
 									('/',MainPage),
@@ -580,9 +644,10 @@ application = webapp2.WSGIApplication([
 									('/addshoppinglist',ShoppingListAdd),
 									('/shoppinglist',ShoppingListManage),
 									('/updatelocation',LocationPage),
-									('/profileinfo',ProfilePage),
+									('/profile',ProfilePage),
 									('/updatepwd',PasswordChange),
-									('/shop',ShopRedirection)
+									('/shop',ShopRedirection),
+									('/editinfo',InfoPage)
 									], debug=True)
 
 

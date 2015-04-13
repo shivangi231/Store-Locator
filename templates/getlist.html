@@ -2,12 +2,12 @@
 <html>
 <head>
 <title>Store Locator: Search page</title>
-<link href="/css/getlist_bootstrap.css" rel='stylesheet' type='text/css' />
+<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="/js/getlist_jquery.min.js"></script>
+<script src="js/jquery.min.js"></script>
 <!-- Custom Theme files -->
-<link href="/css/getlist_style.css" rel="stylesheet" type="text/css" media="all" />
-<link href="/css/getlist_form.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/form.css" rel="stylesheet" type="text/css" media="all" />
 <!-- Custom Theme files -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,68 +17,75 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <!--webfont-->
 <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
 <!-- dropdown -->
-<script src="/js/getlist_jquery.easydropdown.js"></script>
-<link href="/css/getlist_nav.css" rel="stylesheet" type="text/css" media="all"/>
-<script type="text/javascript" src="/js/getlist_hover_pack.js"></script>
-		  <script type="text/javascript">
-		jQuery(document).ready(function($) {
-			$(".scroll").click(function(event){		
-				event.preventDefault();
-				$('html,body').animate({scrollTop:$(this.hash).offset().top},1200);
-			});
-		});
-	</script>
-	<script>$(document).ready(function(){$(".megamenu").megamenu();});</script>
-<script>$(document).ready(function(c) {
-	$('.alert-close').on('click', function(c){
-		$('.message').fadeOut('slow', function(c){
-	  		$('.message').remove();
-		});
-	});	  
-});
-</script>
-<script>$(document).ready(function(c) {
-	$('.alert-close1').on('click', function(c){
-		$('.message1').fadeOut('slow', function(c){
-	  		$('.message1').remove();
-		});
-	});	  
-});
-</script>
-<script
-src="http://maps.googleapis.com/maps/api/js">
-</script>
-<script>
-function initialize()
-{
-  var mapProp = {
-    center: new google.maps.LatLng(51.508742,-0.120850),
-    zoom:9,
+<script src="js/jquery.easydropdown.js"></script>
+<link href="css/nav.css" rel="stylesheet" type="text/css" media="all"/>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script>
+// In the following example, markers appear when the user clicks on the map.
+// The markers are stored in an array.
+// The user can then click an option to hide, show or delete the markers.
+var map;
+var cordinates = [];
+//{%for cordinate in cordinates%}
+cordinates.push(new google.maps.LatLng(23.45,44.3));
+//{%endfor%}
+var trip=cordinates;
+var markers = [];
+
+function initialize() {
+  //document.write("hello");
+  var mapOptions = {
+    zoom: 12,
+    center:cordinates[0],
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-  var mapProp2 = {
-    center: new google.maps.LatLng(51.508742,-0.120850),
-    zoom:9,
-    mapTypeId: google.maps.MapTypeId.SATELLITE
-  };
-  var mapProp3 = {
-    center: new google.maps.LatLng(51.508742,-0.120850),
-    zoom:9,
-    mapTypeId: google.maps.MapTypeId.HYBRID
-  };
-  var mapProp4 = {
-    center: new google.maps.LatLng(51.508742,-0.120850),
-    zoom:9,
-    mapTypeId: google.maps.MapTypeId.TERRAIN
-  };
-  var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-  var map2 = new google.maps.Map(document.getElementById("googleMap2"),mapProp2);
-  var map3 = new google.maps.Map(document.getElementById("googleMap3"),mapProp3);
-  var map4 = new google.maps.Map(document.getElementById("googleMap4"),mapProp4);
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+   var infowindow = new google.maps.InfoWindow({
+    content: "shop addres" 
+  });
+  //infowindow.open(map,marker);
+
+  //This event listener will call addMarker() when the map is clicked.
+  //google.maps.event.addListener(map, 'click', function(event) {
+   // addMarker(event.latLng);
+  //});
+ 
+  for(var i=0;i<trip.length;i++){
+    addMarker(trip[i]);
+  }
+
+  // Adds a marker at the center of the map.
+  //addMarker(haightAshbury);
 }
 
+// Add a marker to the map and push to the array.
+function addMarker(location) {
+  var marker = new google.maps.Marker({
+    position: location,
+    map: map
+  });
+  markers.push(marker);
+}
+
+// Sets the map on all markers in the array.
+function setAllMap(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setAllMap(map);
+}
+
+
 google.maps.event.addDomListener(window, 'load', initialize);
-</script>
+
+    </script>
 
 </head>
 <body>
@@ -101,8 +108,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
 						</div>
 				    </div>
 					<!-- search-scripts -->
-					<script src="/js/getlist_classie.js"></script>
-					<script src="/js/getlist_uisearch.js"></script>
+					<script src="js/classie.js"></script>
+					<script src="js/uisearch.js"></script>
 						<script>
 							new UISearch( document.getElementById( 'sb-search' ) );
 						</script>
@@ -158,7 +165,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 			  <a href="#" class="list-group-item">Address of shop</a>
 		</div>
 	</div>
-<div id="googleMap" style="width:85vh;height:90vh;"></div>
+<div id="map-canvas" style="width:800px;height:700px;""></div>
 
 
 
@@ -166,7 +173,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 	</new>
 		<div class="footer">
 		<div class="up-arrow">
-			<a class="scroll" href="#home"><img src="/images/getlist_images/up.png" alt="" /></a>
+			<a class="scroll" href="#home"><img src="images/up.png" alt="" /></a>
 		</div>
 			<div class="container">
 				<div class="copyrights">

@@ -1,73 +1,66 @@
-<!DOCTYPE html>
-<html>
+  <!DOCTYPE html>
+  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Map Location</title>
-   
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <script>
-  /*  function ajaxRequest(){
- var activexmodes=["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
- if (window.ActiveXObject){ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
-  for (var i=0; i<activexmodes.length; i++){
-   try{
-    return new ActiveXObject(activexmodes[i])
-   }
-   catch(e){
-    //suppress error
-   }
-  }
- }
- else if (window.XMLHttpRequest) // if Mozilla, Safari etc
-  return new XMLHttpRequest()
- else
-  return false
-}*/
-// In the following example, markers appear when the user clicks on the map.
-// The markers are stored in an array.
-// The user can then click an option to hide, show or delete the markers.
-var map;
-var markers = [];
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Store Locator: Shopkeeper Profile</title>
+    <!-- BOOTSTRAP STYLES-->
+    <link href="/css/shop_profile_bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="/css/shop_profile_font-awesome.css" rel="stylesheet" />
+    <!-- CUSTOM STYLES-->
+    <link href="/css/shop_profile_custom.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+            <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script>
 
-function initialize() {
-  var haightAshbury = new google.maps.LatLng(parseFloat({{lat}}),parseFloat({{long}}));
-  var mapOptions = {
-    zoom: 12,
-    center: haightAshbury,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  };
-  map = new google.maps.Map(document.getElementById('map-canvas'),
+  // In the following example, markers appear when the user clicks on the map.
+  // The markers are stored in an array.
+  // The user can then click an option to hide, show or delete the markers.
+  var map;
+  var markers = [];
+
+  function initialize() {
+    var haightAshbury = new google.maps.LatLng(parseFloat({{lat}}),parseFloat({{long}}));
+    var mapOptions = {
+      zoom: 12,
+      center: haightAshbury,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById('map-canvas'),
       mapOptions);
 
-  
-  google.maps.event.addListener(map, 'click', function(event) {
-    addMarker(event.latLng);
-  });
+    
+    google.maps.event.addListener(map, 'click', function(event) {
+      addMarker(event.latLng);
+    });
 
-  
-  addMarker(haightAshbury);
-}
+    
+    addMarker(haightAshbury);
+  }
 
 
-function addMarker(location) {
+  function addMarker(location) {
    clearMarkers();
-  markers = [];
-  var marker = new google.maps.Marker({
+   markers = [];
+   var marker = new google.maps.Marker({
     position: location,
     map: map
   });
-  markers.push(marker);
-  document.getElementById("lat").value = location.lat();
-  document.getElementById("long").value = location.lng();
-  
+   markers.push(marker);
+   document.getElementById("lat").value = location.lat();
+   document.getElementById("long").value = location.lng();
 
-  var infowindow = new google.maps.InfoWindow({
-    content: "shop addres" 
+
+   var infowindow = new google.maps.InfoWindow({
+    content: "<b>{{fname}}</b>" 
   });
-  infowindow.open(map,marker);
-}
+   infowindow.open(map,marker);
+ }
 
 
-function setAllMap(map) {
+ function setAllMap(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   }
@@ -80,34 +73,97 @@ function clearMarkers() {
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
-/*var mygetrequest=new ajaxRequest()
-mygetrequest.onreadystatechange=function(){
- if (mygetrequest.readyState==4){
-  if (mygetrequest.status==200 || window.location.href.indexOf("http")==-1){
-   document.getElementById("result").innerHTML=mygetrequest.responseText
+  /*var mygetrequest=new ajaxRequest()
+  mygetrequest.onreadystatechange=function(){
+   if (mygetrequest.readyState==4){
+    if (mygetrequest.status==200 || window.location.href.indexOf("http")==-1){
+     document.getElementById("result").innerHTML=mygetrequest.responseText
+    }
+    else{
+     alert("An error has occured making the request")
+    }
+   }
   }
-  else{
-   alert("An error has occured making the request")
-  }
- }
-}
-var f1=encodeURIComponent(document.getElementById("demo").value)
-var f2=encodeURIComponent(document.getElementById("demo1").value)
-mygetrequest.open("GET", "?demo="+f1+"&demo1="+f2, true)
-mygetrequest.send(null)
-*/
-    </script>
+  var f1=encodeURIComponent(document.getElementById("demo").value)
+  var f2=encodeURIComponent(document.getElementById("demo1").value)
+  mygetrequest.open("GET", "?demo="+f1+"&demo1="+f2, true)
+  mygetrequest.send(null)
+  */
+</script>
+
   </head>
   <body>
-    <div id="map-canvas" style="width:900px;height:700px;"></div>
-    <div class="p-container">
- <form method = "post" >
-Latitude: <input type="text" id="lat" name="lat" size="25" /> <br />
-Longitude: <input type="text" id="long" name="long" size="25" /> <br />
-<input type="submit" value="submit" />
-</form>
+    <div id="wrapper">
+      <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/profile">{{fname}}</a>
+        </div>
+        <div style="color: white;
+        padding: 15px 50px 5px 50px;
+        float: right;
+        font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adjust">Logout</a> </div>
+      </nav>
+      <!-- /. NAV TOP  -->
+      <nav class="navbar-default navbar-side" role="navigation">
+        <div class="sidebar-collapse">
+          <ul class="nav" id="main-menu">
+            <li class="text-center">
+              <img src="/images/shop_profile_image/find_user.png" class="user-image img-responsive"/>
+            </li>
 
-<div id="result"> </div>
- </div>
-  </body>
-</html>
+
+            
+
+            <li>
+              <a  href="/search">Search Product</a>
+            </li>
+             <li>
+              <a  href="/profile">Shopping List</a>
+             </li>
+            <li >
+              <a  href="/editinfo">Edit Profile Info</a>
+            </li>
+
+          </ul>
+
+        </div> </nav>
+        <div id="page-wrapper" >
+          <div id="page-inner">
+            <div class="row">
+              <div class="col-md-12">
+               <h2>{{fname}}</h2>
+               <h5>Welcome {{fname}}, Love to see you back. </h5>
+
+             </div>
+           </div>
+           <!-- /. ROW  -->
+           <form method="POST" >
+           <div class="form-group">
+            <label>Latitude: </label>
+            <input type="text" class="form-control" name="lat" id="lat">
+                </div>
+               <div class="form-group">
+            <label>Longitude: </label>
+            <input type="text" class="form-control" name="long"  id="long">
+                </div> 
+            
+           
+
+          <div id="map-canvas" style="width:1100px;height:700px;align:center;"></div>
+          <br>
+          <div class="p-container">
+             <div style="color: white;
+                font-size:16px; ">
+                <input type="submit" class="btn btn-danger square-btn-adjust " value="Save"> 
+            </div>          
+ 
+          
+          </div>
+           </form> 
+        

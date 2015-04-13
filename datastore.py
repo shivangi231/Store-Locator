@@ -614,6 +614,7 @@ class Shops(ndb.Model):
 	inventory =  ndb.KeyProperty(kind = Products, repeated = True)
 	inventory_archived =  ndb.KeyProperty(kind = Products, repeated = True)
 	active_sessions = ndb.PickleProperty(repeated = True)
+	open = ndb.BooleanProperty()
 
 	#Register function
 	@classmethod
@@ -627,6 +628,30 @@ class Shops(ndb.Model):
 		else:
 			print "User already exists"
 			return (-1,'This shop already exists')
+
+	@classmethod
+	def open_shop(self,_shop):
+		_shop.open = True
+		_shop.put()
+
+	@classmethod
+	def close_shop(self,_shop):
+		_shop.open = False
+		_shop.put()
+
+	@classmethod
+	def get_open_shops(self):
+		query = Shops.query(Shops.open == True).fetch()
+		return query
+
+	@classmethod
+	def get_open_shops_from_list(self,shops):
+		results = []
+		for q in shops:
+			if q.__class__ == Shops.query().get().__class__:
+				if q.open:
+					results.append(q)
+		return q
 
 	@classmethod
 	def update_info(self,_fname, _lname, _email, _mobile, _shop_name, _shop_address, _shop):

@@ -218,7 +218,9 @@ font-weight: 700;
 .active-menu {
     background-color:#C90000!important;
 }
-
+a:hover {
+    background-color:#ECE0E0;
+}
 .arrow {
     float: right;
 }

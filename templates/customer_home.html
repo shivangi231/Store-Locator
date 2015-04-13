@@ -98,7 +98,7 @@
 				<div class="block">
 					<input placeholder="Enter your password here" name="password" type="password">
 				</div>
-					<input onclick="myFunction()" value="LOG IN" type="submit"> 
+					<input onclick="myFunction()" value="LOG IN" type="submit" > 
                     {%if error%}
                     <div class="alert alert-danger" role="alert">
                     <span class="sr-only">Error:</span>
@@ -106,8 +106,20 @@
 
                 </div>
                 {%endif%}
-					<div class="view"><a href="/registration">Sign Up</a></div>
-			</form>
+                </form>
+					
+            <div class="block" >
+                        <a href="/registration" style="font-size: 30px;
+                            font-weight: 600;
+                            color: #FFF;
+                            display: inline-block;
+                            width: 100%;
+                            font-family: "Oswald",sans-serif;
+                            cursor: pointer;
+                            border: medium none;
+                            outline: medium none;">SIGN UP</a>
+                    </div>
+			
 			
 		</div>
 		</div>

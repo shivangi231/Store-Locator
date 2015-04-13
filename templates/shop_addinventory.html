@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Store Locator: Shopkeeper Profile</title>
 	<!-- BOOTSTRAP STYLES-->
+   <link href="/css/shop_profile_bootstrap.css" rel="stylesheet" />
+     <!-- FONTAWESOME STYLES-->
+    <link href="/css/shop_profile_font-awesome.css" rel="stylesheet" />
+        <!-- CUSTOM STYLES-->
+    <link href="/css/shop_profile_custom.css" rel="stylesheet" />
     <link href="/css/shop_profile_bootstrap.css" rel="stylesheet" />
      <!-- FONTAWESOME STYLES-->
     <link href="/css/shop_profile_font-awesome.css" rel="stylesheet" />
@@ -12,7 +17,12 @@
     <link href="/css/shop_profile_custom.css" rel="stylesheet" />
      <!-- GOOGLE FONTS-->
    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-</head>
+   <link href="/css/cust_search_bootstrap.css" rel="stylesheet" type="text/css">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/js/cust_search_jquery.min.js"></script>
+<!-- Custom Theme files -->
+<link href="/css/cust_search_style.css" rel="stylesheet" type="text/css" media="all">
+<link href="/css/cust_search_form.css" rel="stylesheet" type="text/css" media="all">
 <body>
     <div id="wrapper">
         <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
@@ -61,29 +71,147 @@ font-size: 16px;"> <a href="/shop/logout?url=/shop" class="btn btn-danger square
                 <form >
                  <div class="input-group">
                      <div class="row">
-                        <div class="col-md-11"><input type="text" class="form-control" placeholder="Search for products..." ></div>
+                        <div class="col-md-11"><input type="text" class="form-control" name="query" placeholder="Search for products..." ></div>
                     </div>
-                     
+
                         <span class="input-group-btn">
                         <button class="btn btn-default" type="button">Go!</button>
                         </span>
 
                     </div>
                  </form>
-                
-                
+
+                <br>
+                <div> <button  class="btn btn-primary btn-block">CATEGORIES</button></div>
                 <div class="col-xs-12 ">
-          
-           <ul class="nav nav-pills">
-           	{%for cat in categories%}
-	         <li class="active in"><a href="?category={{cat.key.id()}}&query={{query}}">{{cat.name}}</a></li>
-          		{%endfor%}
+                 <div class="row">
+                      {%for cat in categories%}
+                <div class="col-sm-3"><a href="?category={{cat.key.id()}}&query={{query}}">{{cat.name}}</a>
+                </div>
+                {%endfor%}
+               </div>
+                </div>
+                <br>
+                <div class="container">
+                  <br>
 
-          </ul>
-    </div>
+  <div class="tab-content">
 
+  <!-- content -->
+  <div class="tab-pane fade active in" id="book">
+    <form method="POST" >
+    {%for i in range(0,products|length,3)%}
+        <div class=".col-md-12">
 
-    </div>
+          {% if i < products|length %}
+          <div class=".col-md-3">
+           <div class="col_1_of_single1 span_1_of_single1">
+             <div class="view1 view-fifth1">
+              <div class="top_box">
+              <h3 class="m_1">{{products[i].name}}</h3>
+              <p class="m_2">Category</p>
+            <a href="single.html">
+                 <div class="grid_img">
+               <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""></div>
+                    <div class="mask1">
+                            <div class="info">Quick View</div>
+                        </div>
+                      </div>
+                       <div class="price">price</div>
+             </a></div><a href="single.html">
+              </a></div>
+            <div class="rtng">
+
+                 <fieldset>
+                 <section>
+                   <div class="rating">
+                  <label class="checkbox"><input name="{{i}}" value={{products[i].key.id()}} type="checkbox"><i></i>select</label>
+                 </div>
+                </section>
+                </fieldset>
+
+              </div>
+
+                <div class="clear"></div>
+            </div>
+            </div>
+            {% endif %}
+            {% if i+1 < products|length %}
+            <div class=".col-md-3">
+           <div class="col_1_of_single1 span_1_of_single1">
+             <div class="view1 view-fifth1">
+              <div class="top_box">
+              <h3 class="m_1">{{products[i+1].name}}</h3>
+              <p class="m_2">Category</p>
+            <a href="single.html">
+                 <div class="grid_img">
+               <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""></div>
+                    <div class="mask1">
+                            <div class="info">Quick View</div>
+                        </div>
+                      </div>
+                       <div class="price">price</div>
+             </a></div><a href="single.html">
+              </a></div>
+            <div class="rtng">
+
+                 <fieldset>
+                 <section>
+                   <div class="rating">
+                  <label class="checkbox"><input name="{{i+1}}" value={{products[i+1].key.id()}} type="checkbox"><i></i>select</label>
+                 </div>
+                </section>
+                </fieldset>
+                            </div>
+
+                <div class="clear"></div>
+            </div>
+            </div>
+            {% endif %}
+            {% if i+2 < products|length%}
+              <div class=".col-md-3">
+           <div class="col_1_of_single1 span_1_of_single1">
+             <div class="view1 view-fifth1">
+              <div class="top_box">
+              <h3 class="m_1">{{products[i+2].name}}</h3>
+              <p class="m_2">Category</p>
+            <a href="single.html">
+                 <div class="grid_img">
+               <div class="css3"><img src="/images/cust_search_images/pic-5.jpg" alt=""></div>
+                    <div class="mask1">
+                            <div class="info">Quick View</div>
+                        </div>
+                      </div>
+                       <div class="price">price</div>
+             </a></div><a href="single.html">
+              </a></div>
+            <div class="rtng">
+
+                 <fieldset>
+                 <section>
+                   <div class="rating">
+                  <label class="checkbox"><input name="{{i+2}}" value={{products[i+2].key.id()}} type="checkbox"><i></i>select</label>
+                 </div>
+                </section>
+                </fieldset>
+
+              </div>
+
+                <div class="clear"></div>
+            </div>
+            </div>
+            {% endif %}
+          <div class="clearfix"></div>
+       </div>
+        {%endfor%}
+        <input type="hidden" value = {{products|length}} name = "length">
+        <input type="Submit">
+      </form>
+  </div>
+
+</div>
+</div>
+              </div>
              <!-- /. PAGE INNER  -->
             </div>
          <!-- /. PAGE WRAPPER  -->

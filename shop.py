@@ -150,7 +150,7 @@ class RegistrationPage(Handler):
 		_email,error = utils.verify_email(_email)
 		_password,error = utils.verify_passwords(_password,_c_password)
 		_mobile,error = utils.verify_mobile(_mobile)
-		_shop_name,error = utils.verify_name(_shop_name)
+		_shop_name,error = utils.verify_text(_shop_name)
 		_shop_address,error = utils.verify_text(_shop_address)
 
 		print "/registration-post: fname", _fname
@@ -224,6 +224,35 @@ class ProfilePage(Handler):
 			print "profile-get: no shop found in cookies"
 			self.redirect("/shop/")
 
+	def post(self):		
+		_shop = self.check_cookies(self)
+		if _shop != -1:
+			length = self.request.get('length')
+			print "inventorymanagement :post: ", self.request
+
+			#Sanitizing Length
+			try:
+				length = int(length)
+			except:
+				print "inventorymanagement :post: length is not a number", length
+			print "inventorymanagement: post: length -", length
+
+			if length.__class__ == int('1').__class__ :
+				#Surely length is a valid length and we have products list and a valid user.
+				#It doesnt
+				products = []
+				for i in range(length):
+					key = self.request.get('%s' % i)
+					if key:
+						#Here for sure i have one by one product key. May or may not be geniuine.
+						print "inventorymanagement: post: finding product ids: ", key
+						products.append(key)
+						datastore.Shops.remove_product(key,_shop.key.id())
+				print "inventorymanagement: post: products: ", products
+			self.redirect("/shop/profile")
+		else:
+			self.redirect("/shop/")
+			
 class Infopage(Handler):
 	def get(self):
 		_shop = self.check_cookies(self)
@@ -245,9 +274,6 @@ class Infopage(Handler):
 
 			datastore.Shops.update_info(_fname, _lname, _email, _mobile, _shop_name, _shop_address, _shop)
 			self.redirect("/shop/profile")
-
-
-
 
 class LocationPage(Handler):
 	def get(self):
@@ -282,6 +308,7 @@ class LocationPage(Handler):
 			#Authenticated
 			print "location-page: found shop", _shop.shop_name
 			datastore.Shops.updateLocation(_lat,_log,_shop.key.id())
+			self.redirect("/shop/profile")
 		else:
 			self.redirect("/shop/")
 
@@ -298,11 +325,11 @@ class InventoryAdditionPage(Handler):
 				if len(query) > 0:
 					products, categories, status = self.search_products(query)
 					if products and categories:
-						self.render("shop_addinventory.html", categories = categories, products = products, query = query)
+						self.render("shop_addinventory.html", categories = categories, products = products, query = query, shopname = _shop.shop_name)
 					else:
-						self.render("shop_addinventory.html", error = "No match found. Please try again with a different keyword", query = query)
+						self.render("shop_addinventory.html", error = "No match found. Please try again with a different keyword", query = query, shopname = _shop.shop_name)
 				else:
-					self.render("shop_addinventory.html", categories =  datastore.Categories.getRoots())
+					self.render("shop_addinventory.html", categories =  datastore.Categories.getRoots(), shopname = _shop.shop_name)
 
 
 			if category and not query:
@@ -320,10 +347,10 @@ class InventoryAdditionPage(Handler):
 						#print "search: get: query and category: ", products
 						categories = datastore.Categories.fetch_by_id(category,True)
 						products = datastore.Products.filterProductInCategories(products,categories)
-						self.render("shop_addinventory.html", categories = categories, products = products, query = query)
+						self.render("shop_addinventory.html", categories = categories, products = products, query = query, shopname = _shop.shop_name)
 
 			if not query and not category:
-				self.render("shop_addinventory.html", categories =  datastore.Categories.getRoots())
+				self.render("shop_addinventory.html", categories =  datastore.Categories.getRoots(), shopname = _shop.shop_name)
 		else:
 			self.redirect("/shop/")
 
@@ -351,7 +378,7 @@ class InventoryAdditionPage(Handler):
 						print "add-shopping: post: finding product ids: ", key
 						datastore.Shops.add_product(key,_shop.key.id())
 						print "add-shopping: post: products: ", products
-						self.redirect("/shop/inventory")
+						self.redirect("/shop/profile")
 		else:
 			self.redirect("/shop/")
 
@@ -363,7 +390,7 @@ class InventoryManagementPage(Handler):
 			for product in _shop.inventory:
 				products.append(datastore.Products.fetch_by_id(product.id()))
 				print products
-			self.render("inventory.html", shop = _shop.fname, products = products)
+			self.render("shop_profile.html", shop = _shop.fname, products = products)
 		else:
 			print "inventorymanagement: get: No cookies found. Redirecting"
 			self.redirect("/shop/")
