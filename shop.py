@@ -145,13 +145,13 @@ class RegistrationPage(Handler):
 		_shop_name=self.request.get('shop_name')
 		_shop_address=self.request.get('shop_add')
 
-		_fname,error = utils.verify_name(_fname)
-		_lname,error = utils.verify_name(_lname)
-		_email,error = utils.verify_email(_email)
-		_password,error = utils.verify_passwords(_password,_c_password)
-		_mobile,error = utils.verify_mobile(_mobile)
-		_shop_name,error = utils.verify_text(_shop_name)
-		_shop_address,error = utils.verify_text(_shop_address)
+		_fname,error_fname = utils.verify_name(_fname)
+		_lname,error_lname = utils.verify_name(_lname)
+		_email,error_email = utils.verify_email(_email)
+		_password,error_password = utils.verify_passwords(_password,_c_password)
+		_mobile,error_mobile = utils.verify_mobile(_mobile)
+		_shop_name,error_name = utils.verify_text(_shop_name)
+		_shop_address,error_address = utils.verify_text(_shop_address)
 
 		print "/registration-post: fname", _fname
 		print "/registration-post: lname", _lname
@@ -163,18 +163,40 @@ class RegistrationPage(Handler):
 
 		if _fname != '-1' and _lname != '-1' and _email != '-1' and _password != '-1' and _mobile != '-1' and _shop_address != '-1' and _shop_name != '-1':
 			register_status,error = datastore.Shops.register(_email,_fname,_lname,_password,_mobile,_shop_name,_shop_address)
-			print "/registration-post: ", register_status
+			if error == 'Success':
+				print "/registration-post: ", register_status
+			else:
+				self.render("shop_reg.html", error = "This email id is already in use", fname = _fname, lname = _lname, email = _email, mobile = _mobile, shop_name = _shop_name, shop_add = _shop_address)
 		else:
 			print "/registration-post: incorrect inputs"
-			print "/registration-post: fname", _fname
-			print "/registration-post: lname", _lname
-			print "/registration-post: email", _email
-			print "/registration-post: mobile", _mobile
-			print "/registration-post: shopname", _shop_name
-			print "/registration-post: shopaddress", _shop_address
-			print "/registration-post: password", _password
+			if error_fname == 'Success':
+				error_fname = None
+			else:
+				_fname = None
+			if error_lname == 'Success':
+				error_lname = None
+			else:
+				_lname = None
+			if error_email == 'Success':
+				error_email = None
+			else:
+				_email = None
+			if error_password == 'Success':
+				error_password = None
+			if error_mobile == 'Success':
+				error_mobile = None
+			else:
+				_mobile = None
+			if error_name == 'Success':
+				error_name = None
+			else:
+				shop_name = None
+			if error_address == 'Success':
+				error_address = None
+			else:
+				shop_address =  None
 
-			self.render("shop_reg.html", error = error, fname = _fname, lname = _lname, email = _email, mobile = _mobile, shop_name = _shop_name, shop_add = _shop_address)
+			self.render("shop_reg.html", error = error, fname = _fname, lname = _lname, email = _email, mobile = _mobile, shop_name = _shop_name, shop_add = _shop_address, error_fname = error_fname, error_lname = error_lname, error_email = error_email, error_name = error_name, error_mobile = error_mobile, error_password = error_password, error_address = error_address)
 			return
 
 		print "/registration-post: successfully registered"

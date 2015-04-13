@@ -26,8 +26,6 @@ class Handler(webapp2.RequestHandler):
 	def check_cookies(self, handler, logout = False):
 		_user = handler.request.cookies.get('user')
 		_session = handler.request.cookies.get('session')
-#		self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
-#		self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
 		if logout:
 			_user = datastore.Users.logout(_user,_session)
 			self.response.headers.add_header('Set-cookie','user = %s'%str(""))
@@ -144,17 +142,35 @@ class Registration(Handler):
 		_c_password = self.request.get('crpwd')
 
 
-		_fname,error = utils.verify_name(_fname)
-		_lname,error = utils.verify_name(_lname)
-		_email,error = utils.verify_email(_email)
-		_password,error = utils.verify_passwords(_password,_c_password)
+		_fname,error_fname = utils.verify_name(_fname)
+		_lname,error_lname = utils.verify_name(_lname)
+		_email,error_email = utils.verify_email(_email)
+		_password,error_password = utils.verify_passwords(_password,_c_password)
 		
 		if _fname != '-1' and _lname != '-1' and _email != '-1' and _password != '-1':
-			register_status,error1 = datastore.Users.register(_fname,_lname,_email,_password)	#Now contains user key
-			print "/registration-post: ", register_status
-		else: 
+			register_status,error = datastore.Users.register(_fname,_lname,_email,_password)	#Now contains user key
+			if error == 'Success':
+				print "/registration-post: ", register_status
+			else:
+				self.render("customer_registration.html", error = "This email ID already exists", fname = _fname, lname = _lname, email = _email)
+		else:
+			if error_fname == 'Success':
+				error_fname = None
+			else:
+				_fname = None
+			if error_lname == 'Success':
+				error_lname = None
+			else:
+				_lname = None
+			if error_email == 'Success':
+				error_email = None
+			else:
+				_email = None
+			if error_password == 'Success':
+				error_password = None
+
 			print "/registration-post : INCORRECT DETECTED"
-			self.render("customer_registration.html", error = "Incorrect Details. Please input valid details", fname = _fname, lname = _lname, email = _email)
+			self.render("customer_registration.html", error = "Incorrect Details. Please input valid details", fname = _fname, lname = _lname, email = _email, error_fname = error_fname, error_lname = error_lname, error_password = error_password, error_email = error_email)
 			return
 
 		print "/registration-post: Successfully Registered"
