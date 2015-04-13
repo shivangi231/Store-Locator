@@ -59,12 +59,23 @@ font-size: 16px;"> <a href="/shop/logout?url=/shop" class="btn btn-danger square
         <div id="page-wrapper" >
             <div id="page-inner">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-8">
                      <h2>{{fname}}</h2>
                         <h5>Welcome {{fname}}, Love to see you back. </h5>
-
+                        {%if open == 'True'%}
+                        <h5>Your shop is currently open.</h5>
+                        {%endif%}
                     </div>
+                    <div class="col-md-2">
+                      <form action="/shop/openclose">
+                        <input type="radio" name="switch" value="open">Open<br>
+                        <input type="radio" name="switch" value="close">Close<br>
+                      </div>
+                      <div class="col-md-2">
+                        <input type="submit" value="Submit">
+                      </form>
                 </div>
+              </div>
                  <!-- /. ROW  -->
                  <hr />
                               <!-- Advanced Tables -->
@@ -90,7 +101,7 @@ font-size: 16px;"> <a href="/shop/logout?url=/shop" class="btn btn-danger square
                                         <td>{{products[i][0].brand}}</td>
                                         <td>{{products[i][0].description}}</td>
                                         <td>{{products[i][1].name}}</td>
-                                        {%endfor%}                                        
+                                        {%endfor%}
                                     </tbody>
                                 </table>
                             </div>

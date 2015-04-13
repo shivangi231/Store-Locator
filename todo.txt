@@ -4,3 +4,11 @@
 4. Add a way to automatically say if shop should be open or close. Without manually doing it!
 
 5. Add mail authentication
+
+
+
+
+1. Error handling on registration form through fixed array
+2. Mail authentication
+3. Fix shop profile html.
+4. 

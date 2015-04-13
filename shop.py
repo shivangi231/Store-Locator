@@ -219,7 +219,10 @@ class ProfilePage(Handler):
 				c = p.category.get()
 				products.append((p,c))
 				#print products
-			self.render("shop_profile.html", shopname = _shop.shop_name.upper(), fname = _shop.fname, products = products)
+			a = 'False'
+			if _shop.open:
+				a = 'True'
+			self.render("shop_profile.html", shopname = _shop.shop_name.upper(), fname = _shop.fname, products = products,open=a)
 		else:
 			print "profile-get: no shop found in cookies"
 			self.redirect("/shop/")
@@ -252,13 +255,14 @@ class ProfilePage(Handler):
 			self.redirect("/shop/profile")
 		else:
 			self.redirect("/shop/")
-			
+
 class Infopage(Handler):
 	def get(self):
 		_shop = self.check_cookies(self)
 		if _shop != -1:
 			print "profile-get: found shop", _shop
-			self.render("shop_info.html" ,fname=_shop.fname,lname=_shop.lname,email=_shop.email,mobile=_shop.mobile,add=_shop.shop_address,_shopname=_shop.shop_name,shopname = _shop.shop_name.upper())
+			
+			self.render("shop_info.html" ,fname=_shop.fname,lname=_shop.lname ,email=_shop.email,mobile=_shop.mobile,add=_shop.shop_address,_shopname=_shop.shop_name,shopname = _shop.shop_name.upper())
 		else:
 			self.redirect("/shop/")
 
@@ -458,6 +462,27 @@ class LogoutPage(Handler):
 		self.check_cookies(self,logout = True)
 		self.redirect(url)
 
+class ShopProfile(Handler):
+	def get(self, url):
+		print url
+		_shop=datastore.Shops.fetch_by_id(str(url))
+		if _shop:
+			self.render("shop_view_cust.html",fname=_shop.fname,lname=_shop.lname,email=_shop.email,add=_shop.shop_address,shopname=_shop.shop_name,mobile=_shop.mobile)
+		else:
+			self.redirect('/shop/')
+			
+class ShopOpenClose(Handler):
+	def get(self):
+		_shop = self.check_cookies(self)
+		if _shop != -1:
+			value = self.request.get('switch')
+			print "shopopenclose: get: ", value
+			if str(value) == 'open':
+				datastore.Shops.open_shop(_shop)
+			elif str(value) == 'close':
+				datastore.Shops.close_shop(_shop)
+		self.redirect('/shop/')
+
 application = webapp2.WSGIApplication([('/shop/registration',RegistrationPage),
 									 ('/shop/register',RegistrationPage),
 									 ('/shop/profile',ProfilePage),
@@ -467,5 +492,7 @@ application = webapp2.WSGIApplication([('/shop/registration',RegistrationPage),
 									 ('/shop/logout',LogoutPage),
 									 ('/shop/editinfo',Infopage),
 									 ('/shop/updatepassword',PasswordChange),
+									 ('/shop/shopprofile/(\d+)',ShopProfile),
+									 ('/shop/openclose',ShopOpenClose),
 									 ('/shop/',MainPage)
 									 ], debug=True)

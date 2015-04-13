@@ -630,6 +630,18 @@ class Shops(ndb.Model):
 			return (-1,'This shop already exists')
 
 	@classmethod
+	def fetch_by_id(self, id):
+		query = Shops.query()
+		for q in query:
+			if str(q.key.id()) == str(id):
+				return q
+
+	@classmethod
+	def get_shop_by_url(self, url):
+		rev_key = ndb.Key(urlsafe=urlString)
+		return rev_key.get()
+
+	@classmethod
 	def open_shop(self,_shop):
 		_shop.open = True
 		_shop.put()
