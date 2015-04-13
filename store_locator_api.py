@@ -16,8 +16,16 @@ class UserRequestAuthentication(messages.Message):
   email = messages.StringField(1, required=True)
   password = messages.StringField(2, required=True)
 
+class UserField(messages.Message):
+  fname = messages.StringField(1)
+  lname = messages.StringField(2)
+  email = messages.StringField(3)
+  id = messages.IntegerField(4)
+  phone = messages.StringField(5)
+
 class UserResponseAuthentication(messages.Message):
   status = messages.EnumField(LoginResponseType, 1)
+  userInformation = messages.MessageField(UserField, 2)
 
 class UserReponseRegistration(messages.Message):
   status = messages.BooleanField(1)
@@ -38,6 +46,13 @@ class StoreLocatorAPI(remote.Service):
         statusMessage = LoginResponseType.WRONG_PASSWORD
       else:
         statusMessage = LoginResponseType.LOGIN
+        userField = UserField(fname = query[0].fname,
+                              lname = query[0].lname,
+                              id = query[0].key.id(),
+                              #TODO: add phone field in datastore
+                              # phone = query[0].phone
+                              email = query[0].email)
+        return UserResponseAuthentication(status = statusMessage, userInformation = userField)
       return UserResponseAuthentication(status=statusMessage)
     except(TypeError):
       raise endpoints.NotFoundException('Error in the input format')
