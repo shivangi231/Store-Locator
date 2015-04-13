@@ -28,7 +28,6 @@ class Handler(webapp2.RequestHandler):
 		_session = handler.request.cookies.get('session')
 #		self.response.headers.add_header('Set-cookie','shop = %s'%str(""))
 #		self.response.headers.add_header('Set-cookie','session_shop = %s'%str(""))
-
 		if logout:
 			_user = datastore.Users.logout(_user,_session)
 			self.response.headers.add_header('Set-cookie','user = %s'%str(""))
@@ -303,6 +302,9 @@ class SearchPageProduct(Handler):
 		if _user != -1:
 			#User exists and cookie is correct.
 			length = self.request.get('length')
+			only_open = self.request.get('open_now')
+			if only_open:
+				only_open = True
 			print "search :post: ", self.request			
 
 			if _user.location == None:
@@ -350,12 +352,18 @@ class SearchPageProduct(Handler):
 					#First find matches. then show shops.
 					#if lets say i find one shop with 60% match. I might wanna increase the radius to lets say twice to find 80% match. So exponentially weighted then.
 					for shop in shops:
+						if not shop.location:
+							continue
 						distance = radius - abs(utils.distance_on_unit_sphere(_user.location.lat, _user.location.lon, shop.location.lat, shop.location.lon))
 						match = datastore.Shops.match_products(products,shop)
 						index = math.pow(10,distance/radius) + math.pow(10,match/200.0)
 						print "search: post: index: ", shop.email, shop.location, _user.location, distance, match, index
 						#Sort the array based on this index.
-						selected_shops.append((shop,index))
+						if only_open:
+							if shop.open:
+								selected_shops.append((shop,index))
+						else:		
+							selected_shops.append((shop,index))
 
 					if not len(selected_shops) > 0:
 						self.render("customer_search-ease.html", error = "No relevant shops found", products = products, radius = radius, fname = _user.fname)

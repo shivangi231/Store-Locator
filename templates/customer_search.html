@@ -73,14 +73,14 @@ font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adju
                      <div class="row">
                         <div class="col-md-11"><input type="search" name="query" class="form-control" placeholder="Search for products..." ></div>
                     </div>
-                     
+
                         <span class="input-group-btn">
                         <button class="btn btn-default" type="button">Search</button>
                         </span>
 
                     </div>
                  </form>
-                
+
                 <br>
                 <div> <button  class="btn btn-primary btn-block">CATEGORIES</button></div>
                 <div class="col-xs-12 ">
@@ -94,15 +94,15 @@ font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adju
                 <br>
                 <div class="container">
                   <br>
-                 
+
   <div class="tab-content">
-  
+
   <!-- content -->
   <div class="tab-pane fade active in" id="book">
     <form method="POST" >
     {%for i in range(0,products|length,3)%}
         <div class=".col-md-12">
-          
+
           {% if i < products|length %}
           <div class=".col-md-3">
            <div class="col_1_of_single1 span_1_of_single1">
@@ -121,15 +121,15 @@ font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adju
              </a></div><a href="single.html">
               </a></div>
             <div class="rtng">
-             
-                 <fieldset>         
+
+                 <fieldset>
                  <section>
                    <div class="rating">
                   <label class="checkbox"><input name="{{i}}" value={{products[i].key.id()}} type="checkbox"><i></i>select</label>
                  </div>
                 </section>
                 </fieldset>
-              
+
               </div>
 
                 <div class="clear"></div>
@@ -154,8 +154,8 @@ font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adju
              </a></div><a href="single.html">
               </a></div>
             <div class="rtng">
-              
-                 <fieldset>         
+
+                 <fieldset>
                  <section>
                    <div class="rating">
                   <label class="checkbox"><input name="{{i+1}}" value={{products[i+1].key.id()}} type="checkbox"><i></i>select</label>
@@ -186,15 +186,15 @@ font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adju
              </a></div><a href="single.html">
               </a></div>
             <div class="rtng">
-              
-                 <fieldset>         
+
+                 <fieldset>
                  <section>
                    <div class="rating">
                   <label class="checkbox"><input name="{{i+2}}" value={{products[i+2].key.id()}} type="checkbox"><i></i>select</label>
                  </div>
                 </section>
                 </fieldset>
-              
+
               </div>
 
                 <div class="clear"></div>
@@ -204,11 +204,13 @@ font-size: 16px;"> <a href="/logout?url=/" class="btn btn-danger square-btn-adju
           <div class="clearfix"></div>
        </div>
         {%endfor%}
+        
+        <input type="checkbox" value="yes" name="open_now"><label>Only show shops which are open now  </label><br>
         <input type="hidden" value = {{products|length}} name = "length">
         <input type="Submit">
-      </form>  
+      </form>
   </div>
-  
+
 </div>
 </div>
               </div>

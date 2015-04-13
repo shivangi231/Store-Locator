@@ -1,20 +1,6 @@
-1. Make the shopping list addition
-2. Make shopping list management
-3. Secure the cookies
-4. Integrate the shopkeeper's inventory as same as user's shopping list. The frontend will have all the required changes
-    Not the backend
-5. Make backend API for android and further applications
+1. In the radius increase page, show values on either end
+2. Better render the checkbox on search page
+3. Add a way to mark your shop open or close - shopkeeper
+4. Add a way to automatically say if shop should be open or close. Without manually doing it!
 
-
-Nikku ->
-Handling the geopts of shopkeeper.
-Fetch current location of user through maps api.
-Fetch current location of user through browser functions.
-
-Me ->
-Integrate nikku's work with the current code.
-_CHANGES_
-
-- make more verify functions in utils
-- better error handling in registration. Backend and better rendering at frontend
-- write a way to generate a permalink for each shop based on shop key.
+5. Add mail authentication
