@@ -3,6 +3,7 @@ from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
 from datastore import Users
+from google.appengine.ext import ndb
 
 package = 'StoreLocator'
 
@@ -57,6 +58,19 @@ class StoreLocatorAPI(remote.Service):
       return UserResponseAuthentication(status=statusMessage)
     except(TypeError):
       raise endpoints.NotFoundException('Error in the input format')
+
+  @endpoints.method(UserField, UserReponseBoolean,
+                    path="user", http_method='POST',
+                    name='greetings.userProfileUpdate')
+  def user_profile_update(self, request):
+    #TODO: Add phone field here
+    #TODO: handle error here
+    currentUser = ndb.Key("Users", request.id).get()
+    currentUser.fname = request.fname
+    currentUser.lname = request.lname
+    currentUser.email = request.email
+    currentUser.put();
+    return UserReponseBoolean(status=True)
 
   @endpoints.method(UserRequestAuthentication, UserReponseBoolean,
                     path="register", http_method='PUT',
